@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="WorthIt: money lessons for kids.">
 <title>WorthIt</title>
-<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="apple-touch-icon" href="icon-180.png">
 <meta name="theme-color" content="#0C0A07">
 <style>
-  @font-face { font-family: "WorthIt Outfit"; src: url("fonts/outfit.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
-  @font-face { font-family: "WorthIt Manrope"; src: url("fonts/manrope.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
-  @font-face { font-family: "WorthIt Mono"; src: url("fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+  @font-face { font-family: "WorthIt Outfit"; src: url("outfit.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: "WorthIt Manrope"; src: url("manrope.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "WorthIt Mono"; src: url("jetbrains-mono.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
   :root {
     color-scheme: dark;
     --bg: #0B0907; --raise: #14110D; --line: rgba(228,176,74,.16); --line2: rgba(228,176,74,.32);
@@ -217,7 +217,7 @@
 <body>
 <section class="intro" id="intro" aria-label="WorthIt">
   <div class="dust" aria-hidden="true" id="dust"></div>
-  <img class="logo" src="icons/logo.webp" alt="WorthIt" width="990" height="747">
+  <img class="logo" src="logo.webp" alt="WorthIt" width="990" height="747">
   <button class="enter" id="enter" type="button">Enter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
 </section>
 <main class="app" id="app" hidden><div class="dev" id="dev"></div></main>
@@ -2228,7 +2228,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   // Load WorthIt's built-in AI. Our word list and categories come from this site; the open-source parts come from
   // their official public releases, pinned to exact versions: ONNX Runtime Web 1.22.0 (MIT, Microsoft) and the
   // all-MiniLM-L6-v2 8-bit model (Apache-2.0, Xenova on Hugging Face). Only product names are ever analysed, on this device.
-  const base = new URL("ai/", document.baseURI).href;
+  const base = new URL("./", document.baseURI).href;
   const ORT = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/";
   const MODEL = "https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/onnx/model_quantized.onnx";
   const cats = fetch(base + "categories.json").then((r) => r.json()).then((j) => j.categories).catch(() => []);
@@ -2256,8 +2256,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
 (function () {
   "use strict";
   var W = WorthIt;
-  var MARK = "icons/mark.png";
-  var MARK_BIG = "icons/mark-512.png";
+  var MARK = "mark.png";
+  var MARK_BIG = "mark-512.png";
   var KEY = "worthit-app-v1";
   var PRECOMPUTED = {"fire station building set":{"kind":"building","label":"a building set","confidence":0.77,"exactName":"Fire Station Building Set","searchQuery":"Fire Station Building Set","secondhandQuery":"Fire Station Building Set","ideas":["Build something new from bricks you already have","Swap sets with a friend","Look for a used set with all the pieces"],"tip":"Building sets last for years, so used ones are often as good as new.","scores":[["building",0.772],["school",0.454],["toys",0.422]]},"kids 3-wheel scooter":{"kind":"ride","label":"something to ride","confidence":0.87,"exactName":"Kids 3-Wheel Scooter","searchQuery":"Kids 3-Wheel Scooter","secondhandQuery":"Kids 3-Wheel Scooter","ideas":["Borrow one to try it first","Ask if a cousin has outgrown theirs","Look for a used one in good shape"],"tip":"Kids outgrow scooters and bikes fast, so there are lots of good used ones.","scores":[["ride",0.865],["home",0.382],["electronics",0.371]]},"glow-in-the-dark story book":{"kind":"book","label":"a book","confidence":0.58,"exactName":"Glow-in-the-Dark Story Book","searchQuery":"Glow-in-the-Dark Story Book","secondhandQuery":"Glow-in-the-Dark Story Book","ideas":["Borrow it from the library","Swap books with a friend","Look for a used copy"],"tip":"The library lets you read lots of books for free.","scores":[["book",0.577],["school",0.346],["arts",0.29]]},"harry potter paperback":{"kind":"book","label":"a book","confidence":0.74,"exactName":"Harry Potter paperback","searchQuery":"Harry Potter paperback","secondhandQuery":"Harry Potter paperback","ideas":["Borrow it from the library","Swap books with a friend","Look for a used copy"],"tip":"The library lets you read lots of books for free.","scores":[["book",0.738],["school",0.479],["arts",0.429]]},"kids bicycle 16 inch":{"kind":"ride","label":"something to ride","confidence":0.8,"exactName":"Kids bicycle 16 inch","searchQuery":"Kids bicycle 16 inch","secondhandQuery":"Kids bicycle inch","ideas":["Borrow one to try it first","Ask if a cousin has outgrown theirs","Look for a used one in good shape"],"tip":"Kids outgrow scooters and bikes fast, so there are lots of good used ones.","scores":[["ride",0.799],["arts",0.406],["clothes",0.38]]},"mario kart for nintendo switch":{"kind":"game","label":"a video game","confidence":0.65,"exactName":"Mario Kart for Nintendo Switch","searchQuery":"Mario Kart for Nintendo Switch","secondhandQuery":"Mario Kart for Nintendo Switch","ideas":["Play it at a friend's house first","Swap games with a friend","Look for a pre-owned copy"],"tip":"Games often cost less a few months after they come out.","scores":[["game",0.649],["toys",0.363],["puzzle",0.338]]},"squishmallows plush":{"kind":"plush","label":"a toy figure or plush","confidence":0.67,"exactName":"Squishmallows plush","searchQuery":"Squishmallows plush","secondhandQuery":"Squishmallows plush","ideas":["Pick one favourite instead of many","Swap with a friend","Look for a gently used one"],"tip":"The toys you really love get played with the most.","scores":[["plush",0.669],["toys",0.437],["home",0.373]]},"crayola art set":{"kind":"arts","label":"art and craft supplies","confidence":0.67,"exactName":"Crayola art set","searchQuery":"Crayola art set","secondhandQuery":"Crayola art set","ideas":["Use the supplies you already have first","Share a set with a sibling","Make your own from boxes and paper tubes"],"tip":"Boxes, paper tubes and old magazines make great craft materials.","scores":[["arts",0.673],["school",0.502],["building",0.497]]},"adidas junior football":{"kind":"sports","label":"sports gear","confidence":0.69,"exactName":"Adidas junior football","searchQuery":"Adidas junior football","secondhandQuery":"Adidas junior football","ideas":["Borrow one to try the sport first","Use your school's equipment","Look for a used one"],"tip":"Try a sport for a while before buying all the gear.","scores":[["sports",0.694],["clothes",0.459],["toys",0.325]]},"monopoly junior":{"kind":"puzzle","label":"a board game or puzzle","confidence":0.8,"exactName":"Monopoly Junior","searchQuery":"Monopoly Junior","secondhandQuery":"Monopoly Junior","ideas":["Borrow it from a friend or the library","Play a game you already own","Look for a used one with all the pieces"],"tip":"Board games are more fun shared, so they're great to borrow.","scores":[["puzzle",0.802],["sports",0.466],["game",0.365]]},"bluetooth headphones":{"kind":"electronics","label":"a gadget","confidence":0.85,"exactName":"Bluetooth headphones","searchQuery":"Bluetooth headphones","secondhandQuery":"Bluetooth headphones","ideas":["Ask if someone at home has an old one","Look for a refurbished one","Compare prices in a few shops"],"tip":"Refurbished gadgets are checked and fixed, and cost less.","scores":[["electronics",0.855],["sports",0.217],["clothes",0.198]]},"smiggle pencil case":{"kind":"school","label":"school supplies","confidence":0.84,"exactName":"Smiggle pencil case","searchQuery":"Smiggle pencil case","secondhandQuery":"Smiggle pencil case","ideas":["Check what you already have at home","Reuse last year's if it still works","Share with a sibling"],"tip":"Things that still work don't need replacing.","scores":[["school",0.841],["arts",0.536],["clothes",0.296]]},"rc monster truck":{"kind":"toys","label":"a toy","confidence":0.86,"exactName":"RC monster truck","searchQuery":"RC monster truck","secondhandQuery":"RC monster truck","ideas":["Play with toys you already have in a new way","Swap toys with a friend","Look for a gently used one"],"tip":"Toys you already have can feel new when you swap them with a friend.","scores":[["toys",0.863],["ride",0.416],["building",0.373]]}};
 

@@ -1,0 +1,4 @@
+WorthIt's built-in AI
+- all-MiniLM-L6-v2 (8-bit ONNX), by Xenova on Hugging Face, from sentence-transformers. Apache License 2.0 (Apache-2.0.txt). Loaded from huggingface.co.
+- ONNX Runtime Web 1.22.0, Copyright (c) Microsoft Corporation. MIT License (MIT-onnxruntime.txt). Loaded from cdn.jsdelivr.net.
+- vocab.json and categories.json: made by the WorthIt team.
