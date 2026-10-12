@@ -1,0 +1,16 @@
+WorthIt: Money Lessons for Kids
+Copyright (c) 2026 the WorthIt team (Aadi, Dhruv, Arav, Arav and Madhav). All rights reserved.
+
+The WorthIt name, logo, design, lesson text, tips and code in this repository are
+the property of the WorthIt team. You may view this code and try the demo, but you
+may not copy, modify, redistribute, sell or republish it, in whole or in part,
+without written permission from the WorthIt team.
+
+Third-party components keep their own licences, which are included in the
+licenses/ folder and listed on credits.html:
+  - Outfit, Manrope and JetBrains Mono typefaces: SIL Open Font License 1.1
+  - all-MiniLM-L6-v2 language model (sentence-transformers; ONNX export by Xenova): Apache License 2.0
+  - ONNX Runtime Web (Microsoft Corporation): MIT License
+
+Chrome is a trademark of Google LLC. Shop names mentioned in WorthIt are trademarks
+of their owners; WorthIt is not affiliated with them.
