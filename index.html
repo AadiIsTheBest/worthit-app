@@ -94,8 +94,8 @@
   .bub b { color: var(--gold-hi); font-weight: 600; }
 
   .form { width: 100%; max-width: 360px; display: grid; gap: 10px; }
-  .in { width: 100%; box-sizing: border-box; background: rgba(255,255,255,.02); border: 1px solid var(--line); color: var(--text); border-radius: 14px; padding: 14px 16px; font: 500 16px var(--display); transition: border-color .2s, box-shadow .2s; }
-  .in:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(228,176,74,.12); }
+  input.in, select.in { width: 100%; box-sizing: border-box; background: rgba(255,255,255,.02); border: 1px solid var(--line); color: var(--text); border-radius: 14px; padding: 14px 16px; font: 500 16px var(--display); transition: border-color .2s, box-shadow .2s; }
+  input.in:focus, select.in:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(228,176,74,.12); }
   .money { position: relative; }
   .money .cur { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--gold-hi); font: 600 16px var(--display); pointer-events: none; }
   .money .in { padding-left: 50px; }
@@ -139,7 +139,7 @@
 
   /* the guided tour: a spotlight, a ring and Penny's card */
   .coach { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
-  .coach-mask { position: absolute; inset: 0; background: rgba(5,4,3,.74); pointer-events: auto; transition: clip-path .5s var(--ease); }
+  .coach-mask { position: absolute; inset: 0; background: rgba(5,4,3,.74); pointer-events: auto; transition: clip-path .5s var(--ease), opacity .4s; }
   .coach-ring { position: absolute; border-radius: 18px; box-shadow: 0 0 0 2px var(--gold), 0 0 0 7px rgba(228,176,74,.18), 0 0 40px rgba(228,176,74,.45); transition: all .5s var(--ease); pointer-events: none; }
   .coach-card { position: absolute; left: 16px; right: 16px; max-width: 380px; margin: 0 auto; pointer-events: auto; background: linear-gradient(180deg, #1D1812, #120E0A); border: 1px solid var(--line2); border-radius: 20px; padding: 14px 16px 12px;
     box-shadow: 0 24px 60px rgba(0,0,0,.6), 0 0 40px -10px rgba(228,176,74,.25); transition: top .5s var(--ease), opacity .3s; }
@@ -161,6 +161,106 @@
   .coach.final .coach-card { text-align: center; padding: 20px 20px 18px; }
   .coach.final .bigp { width: 120px; height: 120px; margin: 0 auto 4px; }
   .coach.final .coach-card .ti { display: block; font-size: 22px; }
+
+  /* the WorthIt start-up */
+  .launch { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; overflow: hidden;
+    background: radial-gradient(60% 45% at 50% 42%, #2A1F10 0%, #0B0907 70%); clip-path: circle(150% at var(--x) var(--y)); }
+  .launch .lm { width: 150px; position: relative; z-index: 2; filter: drop-shadow(0 0 40px rgba(228,176,74,.55)); }
+  .launch .ln { font: 800 34px var(--display); letter-spacing: -.03em; position: relative; z-index: 2; }
+  .launch .lbar { width: 160px; height: 3px; border-radius: 99px; background: rgba(228,176,74,.15); overflow: hidden; margin-top: 10px; position: relative; z-index: 2; }
+  .launch .lbar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--gold-lo), var(--gold-hi)); border-radius: 99px; }
+  .launch .lt { font: 600 10.5px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--gold-hi); position: relative; z-index: 2; min-height: 14px; }
+  .launch .lring { position: absolute; left: 50%; top: 42%; width: 140px; height: 140px; margin: -70px 0 0 -70px; border-radius: 50%; border: 1.5px solid rgba(243,210,122,.6); box-shadow: 0 0 40px rgba(228,176,74,.4); }
+  .launch .rain i { position: absolute; top: -20px; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFF1BF, #E4B04A 55%, #9A6F1E); box-shadow: 0 0 10px rgba(228,176,74,.5); transform: scale(var(--s)); opacity: 0; }
+  .launch.out { animation: fade-out .6s ease forwards; }
+  .pill.invite { box-shadow: 0 0 0 0 rgba(228,176,74,.55), 0 14px 38px rgba(228,176,74,.3), inset 0 1px 0 rgba(255,255,255,.55); }
+  .scr.fromlaunch { animation: none !important; }
+
+
+  /* sign up, plan, demo shop */
+  .dev.touring .penny-help { display: none !important; }
+  .auth .body, .scr.plan .body { justify-content: center; text-align: center; }
+  .scr.plan .body > .btn { width: 100%; max-width: 330px; }
+  .mark.sm { width: 92px; height: auto; filter: drop-shadow(0 12px 30px rgba(228,176,74,.35)); }
+  .auth h2 { margin: 4px 0 0; font: 800 32px var(--display); letter-spacing: -.035em; }
+  .seg { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; border: 1px solid var(--line); margin: 18px 0 14px; background: rgba(255,255,255,.02); }
+  .seg button { border: 0; background: transparent; color: var(--mute); border-radius: 999px; padding: 8px 20px; font: 600 13.5px var(--display); cursor: pointer; transition: all .3s var(--ease); }
+  .seg button[aria-pressed="true"] { background: linear-gradient(180deg, #F5D686, var(--gold) 55%, var(--gold-lo)); color: #17120A; }
+  .authf { text-align: left; }
+  .agree { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: var(--mute); line-height: 1.5; cursor: pointer; }
+  .agree input { margin-top: 3px; accent-color: #E4B04A; width: 16px; height: 16px; flex: 0 0 auto; }
+  .agree a { color: var(--gold-hi); }
+  .err { margin: 0; min-height: 16px; color: #E9A38F; font-size: 12.5px; font-weight: 600; }
+  .shake { animation: shake .45s cubic-bezier(.36,.07,.19,.97); }
+  @keyframes shake { 20%, 80% { transform: translateX(-3px); } 40%, 60% { transform: translateX(6px); } 50% { transform: translateX(-6px); } }
+  .ptitle { margin: 0 0 14px; font: 700 23px var(--display); letter-spacing: -.02em; }
+  .tline { width: 100%; max-width: 330px; display: grid; gap: 2px; text-align: left; margin-bottom: 16px; position: relative; }
+  .trow { display: flex; gap: 12px; padding: 7px 0; animation: rise .7s var(--ease) both; }
+  .trow i { width: 12px; height: 12px; border-radius: 50%; margin-top: 4px; flex: 0 0 auto; background: var(--gold); box-shadow: 0 0 0 4px rgba(228,176,74,.15); }
+  .trow:last-child i { background: transparent; border: 2px solid var(--gold); box-shadow: none; }
+  .trow b { display: block; font: 600 14.5px var(--display); }
+  .trow span { font-size: 12.5px; color: var(--mute); }
+  .plans { width: 100%; max-width: 330px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .tier { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 14px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.02); color: var(--text); cursor: pointer; text-align: left; transition: all .3s var(--ease); }
+  .tier.on { border-color: var(--gold); background: linear-gradient(180deg, rgba(228,176,74,.14), rgba(228,176,74,.03)); box-shadow: 0 0 0 1px rgba(228,176,74,.35), 0 10px 30px rgba(228,176,74,.12); }
+  .tier .pn { font: 600 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); }
+  .tier .pp { font: 700 24px var(--display); } .tier .pp small { font: 500 12px var(--body); color: var(--mute); margin-left: 2px; }
+  .tier .px { font-size: 11.5px; color: var(--faint); }
+  .tier .best { position: absolute; top: -9px; right: 10px; font: 700 9.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; background: var(--gold); color: #17120A; border-radius: 99px; padding: 3px 8px; }
+  .link.center { margin: 10px auto 6px; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; }
+  .co { height: auto; padding: 26px 22px 22px; display: grid; gap: 10px; }
+  .co h3 { margin: 0; font: 700 22px var(--display); }
+  .co .cop { margin: 0; font: 800 30px var(--display); color: var(--gold-hi); }
+  .co ul { margin: 0; padding-left: 18px; color: #E0D7C8; font-size: 13.5px; line-height: 1.7; }
+  .demo-tag { justify-self: start; font: 600 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--gold-hi); border: 1px solid var(--line2); border-radius: 99px; padding: 4px 10px; }
+
+  .brow { display: flex; align-items: center; gap: 8px; padding: 12px 12px 10px; background: #15110C; border-bottom: 1px solid var(--line); flex: 0 0 auto; position: relative; z-index: 4; }
+  .brow .ico { width: 32px; height: 32px; }
+  .brow .url { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; background: #0B0907; border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; font: 500 12px var(--mono); color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brow .url svg { width: 12px; height: 12px; flex: 0 0 auto; color: var(--green); }
+  .wiicon { position: relative; width: 38px; height: 34px; border-radius: 10px; border: 1px solid var(--line2); background: linear-gradient(180deg, #221A10, #120E0A); cursor: pointer; display: grid; place-items: center; padding: 0; }
+  .wiicon img { width: 24px; }
+  .wiicon .bd { position: absolute; top: -7px; right: -8px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; background: var(--gold); color: #17120A; font: 800 10.5px var(--display); display: grid; place-items: center; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+  .wiicon.pop { animation: iconpop .7s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes iconpop { 40% { transform: scale(1.3) rotate(-8deg); box-shadow: 0 0 24px rgba(228,176,74,.7); } }
+  .page { flex: 1; min-height: 0; overflow-y: auto; background: #FAFAF7; color: #1D1D22; padding: 14px 16px 90px; font-family: var(--body); }
+  .shophead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .shophead .logo { font: 800 22px var(--display); letter-spacing: -.03em; color: #D9402B; } .shophead .logo b { color: #1D1D22; }
+  .shophead .nav { font-size: 11.5px; color: #6B6B72; }
+  .search { display: flex; align-items: center; gap: 8px; margin: 12px 0 6px; padding: 10px 14px; border-radius: 12px; background: #fff; border: 1px solid #E5E3DD; font-size: 14px; color: #1D1D22; }
+  .search svg { width: 16px; height: 16px; color: #6B6B72; }
+  .count { margin: 4px 0 12px; font-size: 12px; color: #6B6B72; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pcard { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; background: #fff; border: 1px solid #E8E6E0; border-radius: 14px; padding: 10px; cursor: pointer; font-family: inherit; color: inherit; transition: transform .3s var(--ease), box-shadow .3s; animation: rise .6s var(--ease) both; }
+  .pcard:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
+  .pcard .pimg { display: block; width: 100%; aspect-ratio: 10 / 8; background: #F3F1EC; border-radius: 10px; }
+  .pcard .pimg svg { width: 100%; height: 100%; display: block; }
+  .pcard .pnm { font: 600 12.5px/1.3 var(--body); }
+  .pcard .ppr { font: 700 14px var(--display); color: #D9402B; }
+  .pdp .crumb { margin: 0 0 8px; font-size: 11.5px; color: #6B6B72; }
+  .pdp .shot { background: #F3F1EC; border-radius: 16px; aspect-ratio: 10 / 8; }
+  .pdp .shot svg { width: 100%; height: 100%; display: block; }
+  .pdp .pname { margin: 12px 0 2px; font: 700 21px/1.25 var(--display); }
+  .pdp .stars { margin: 0; font-size: 12px; color: #B8860B; }
+  .pdp .prices { display: inline-flex; align-items: baseline; gap: 8px; margin: 10px 0 6px; padding: 2px 6px; border-radius: 8px; }
+  .pdp .now { font: 800 26px var(--display); color: #1D1D22; } .pdp .old { font-size: 13px; color: #9A9AA2; text-decoration: line-through; }
+  .pdp .desc { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; color: #44444C; }
+  .pdp .buy { display: flex; gap: 8px; } .pdp .buy button { flex: 1; border-radius: 12px; padding: 12px; font: 700 14px var(--display); cursor: pointer; border: 0; }
+  .pdp .cart { background: #1D1D22; color: #fff; } .pdp .buynow { background: #D9402B; color: #fff; }
+  .pdp .ship { font-size: 11.5px; color: #6B6B72; }
+  [data-scan] { transition: box-shadow .4s, background .4s; }
+  [data-scan].found { box-shadow: 0 0 0 2px #E4B04A, 0 0 18px rgba(228,176,74,.45); border-radius: 8px; background: rgba(228,176,74,.08); }
+  .scan { position: absolute; left: 0; right: 0; top: 57px; bottom: 0; z-index: 5; pointer-events: none; overflow: hidden; }
+  .scan i { position: absolute; left: 0; right: 0; height: 90px; top: -90px; background: linear-gradient(180deg, transparent, rgba(228,176,74,.28) 70%, rgba(243,210,122,.95) 98%, transparent); }
+  .scan span { position: absolute; left: 0; right: 0; margin: 0 auto; width: max-content; bottom: 22px; white-space: nowrap; max-width: 88%; overflow: hidden; text-overflow: ellipsis; background: #15110C; color: var(--gold-hi); border: 1px solid var(--line2); border-radius: 999px; padding: 8px 14px; font: 600 12px var(--display); box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  .scan.done i { animation: none; opacity: 0; transition: opacity .3s; }
+  .scan.gone { opacity: 0; transition: opacity .4s; }
+  .psheet { position: absolute; left: 0; right: 0; bottom: 0; height: 88%; z-index: 6; transform: translateY(105%); transition: transform .55s var(--ease); border-radius: 22px 22px 0 0; overflow: hidden; box-shadow: 0 -24px 60px rgba(0,0,0,.45); border-top: 1px solid var(--line2); }
+  .psheet.open { transform: none; }
+  .toast { position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%); z-index: 8; background: #15110C; color: var(--text); border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; font-size: 12.5px; max-width: 86%; text-align: center; animation: rise .4s var(--ease) both; }
+  .toast.out { opacity: 0; transition: opacity .4s; }
+  @media (prefers-reduced-motion: no-preference) { .scan i { animation: sweep 1.1s cubic-bezier(.5,0,.5,1) .1s both; } .scan span { animation: rise .5s var(--ease) both; } }
+  @keyframes sweep { from { top: -90px; } to { top: 100%; } }
 
   /* hover hints */
   .hint { position: absolute; z-index: 45; max-width: 230px; pointer-events: none; background: #1D1812; border: 1px solid var(--line2); color: var(--text); border-radius: 12px; padding: 8px 11px; font: 500 12.5px/1.45 var(--body);
@@ -190,6 +290,14 @@
     .coach-card { animation: rise .6s var(--ease) both; }
     .coach-card .tap i { animation: ping 1.4s ease-out infinite; }
     .coach-ring { animation: ring 2s ease-in-out infinite; }
+    .launch { animation: launch-in .55s cubic-bezier(.7,0,.2,1) both; }
+    .launch .lm { animation: lm-in .9s .15s cubic-bezier(.2,1.3,.3,1) both, lm-pulse 1.2s 1s ease-in-out infinite; }
+    .launch .ln { animation: rise .7s .35s var(--ease) both; }
+    .launch .lring { animation: lring 1.4s .2s ease-out infinite; }
+    .launch .lbar i { animation: lbar 1.75s .1s cubic-bezier(.6,0,.3,1) forwards; }
+    .launch .lt { animation: rise .5s .5s var(--ease) both; }
+    .launch .rain i { animation: coinfall 1.4s ease-in forwards; }
+    .pill.invite { animation: rise .8s var(--ease) both, invite 2s 1.2s ease-out infinite; }
   }
   @keyframes logo-in { from { opacity: 0; transform: translateY(30px) scale(.92); filter: blur(12px); } to { opacity: 1; transform: none; filter: drop-shadow(0 20px 60px rgba(228,176,74,.25)); } }
   @keyframes logo-glow { 50% { filter: drop-shadow(0 20px 90px rgba(228,176,74,.42)); } }
@@ -209,6 +317,13 @@
   @keyframes fade-out { to { opacity: 0; } }
   @keyframes sheet-up { from { transform: translateY(100%); } to { transform: none; } }
   @keyframes sheet-down { to { transform: translateY(100%); } }
+  @keyframes launch-in { from { clip-path: circle(0 at var(--x) var(--y)); } to { clip-path: circle(150% at var(--x) var(--y)); } }
+  @keyframes lm-in { 0% { transform: scale(.2) rotate(-25deg); opacity: 0; } 70% { transform: scale(1.12) rotate(4deg); opacity: 1; } 100% { transform: none; } }
+  @keyframes lm-pulse { 50% { transform: scale(1.05); filter: drop-shadow(0 0 60px rgba(228,176,74,.75)); } }
+  @keyframes lring { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.6); opacity: 0; } }
+  @keyframes lbar { to { width: 100%; } }
+  @keyframes coinfall { 0% { opacity: 0; transform: translateY(0) scale(var(--s)) rotate(0); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateY(620px) scale(var(--s)) rotate(540deg); } }
+  @keyframes invite { 0% { box-shadow: 0 0 0 0 rgba(228,176,74,.55), 0 14px 38px rgba(228,176,74,.3), inset 0 1px 0 rgba(255,255,255,.55); } 100% { box-shadow: 0 0 0 18px rgba(228,176,74,0), 0 14px 38px rgba(228,176,74,.3), inset 0 1px 0 rgba(255,255,255,.55); } }
   @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(228,176,74,.6); } 100% { box-shadow: 0 0 0 10px rgba(228,176,74,0); } }
   @keyframes ring { 50% { box-shadow: 0 0 0 2px var(--gold-hi), 0 0 0 10px rgba(228,176,74,.12), 0 0 56px rgba(228,176,74,.55); } }
 </style>
@@ -474,7 +589,7 @@ var WorthItQuest = (() => {
 // and nothing is charged automatically when the week ends. A parent chooses to subscribe.
 
 var WorthItPlan = (() => {
-  const PAYMENTS_ENABLED = false;
+  const PAYMENTS_ENABLED = true; // the web app shows the free week and the family plan
   const TRIAL_DAYS = 7;
   const PRICE_LABEL = "S$4 a month";
   const FREE_LESSONS = 3; // lessons 1-3 stay free for everyone, always
@@ -853,6 +968,87 @@ var WorthItOnboard = (() => {
   @keyframes ob-burst { 0% { opacity:1; transform:rotate(var(--a)) translateX(0) scale(.6); } 70% { opacity:1; } 100% { opacity:0; transform:rotate(var(--a)) translateX(var(--d)) translateY(30px) scale(1); } }
   @keyframes ob-pick { 50% { transform:scale(1.1); } }
   @keyframes ob-ready { 50% { transform:scale(1.03); } }
+
+
+  /* Penny moves differently on every step */
+  @media (prefers-reduced-motion:no-preference) {
+    .ob-stage.s-name .ob-penny .pa .pa-body { animation:pn-slidein .9s cubic-bezier(.2,1.2,.4,1) both, pa-bob 2.6s .9s ease-in-out infinite; }
+    .ob-stage.s-age .ob-penny .pa .pa-body { animation:pn-bounce 1s cubic-bezier(.3,1.6,.5,1) both, pa-bob 2.6s 1s ease-in-out infinite; }
+    .ob-stage.s-goal .ob-penny .pa .pa-body { animation:pn-floatdown 1.1s cubic-bezier(.2,1,.3,1) both, pa-bob 2.6s 1.1s ease-in-out infinite; }
+    .ob-stage.s-handoff .ob-penny .pa .pa-body { animation:pn-spin 1s cubic-bezier(.2,1,.3,1) both, pa-bob 2.6s 1s ease-in-out infinite; }
+    .ob-stage.s-allowance .ob-penny .pa .pa-body { animation:pn-peek 1s cubic-bezier(.2,1.3,.4,1) both, pa-bob 2.6s 1s ease-in-out infinite; }
+    .ob-stage.s-wait .ob-penny .pa .pa-body { animation:pn-tilt 1.2s ease-in-out both, pa-bob 2.6s 1.2s ease-in-out infinite; }
+    .ob-stage.s-handback .ob-penny .pa .pa-body { animation:pn-spinback 1s cubic-bezier(.2,1,.3,1) both, pa-bob 2.6s 1s ease-in-out infinite; }
+    .ob-stage.s-aha .ob-penny .pa .pa-body { animation:pn-zoom .8s cubic-bezier(.2,1.4,.4,1) both, pa-bob 2.6s .8s ease-in-out infinite; }
+    .ob-stage.s-promise .ob-penny .pa .pa-body { animation:pn-glow 1.4s ease both, pa-bob 2.6s 1.4s ease-in-out infinite; }
+    .ob-stage.s-week .ob-penny .pa .pa-body, .ob-stage.s-pin .ob-penny .pa .pa-body { animation:pn-slidein-r .9s cubic-bezier(.2,1.2,.4,1) both, pa-bob 2.6s .9s ease-in-out infinite; }
+    .ob-stage.s-done .ob-penny .pa .pa-body { animation:pn-rocket 1.1s cubic-bezier(.2,1.1,.3,1) both, pa-bob 2.6s 1.1s ease-in-out infinite; }
+  }
+  @keyframes pn-slidein { 0% { transform:translateX(-160%) rotate(-30deg); } 70% { transform:translateX(8%) rotate(6deg); } 100% { transform:none; } }
+  @keyframes pn-slidein-r { 0% { transform:translateX(160%) rotate(30deg); } 70% { transform:translateX(-8%) rotate(-6deg); } 100% { transform:none; } }
+  @keyframes pn-bounce { 0% { transform:translateY(-90%) scale(.8); } 40% { transform:translateY(0) scale(1.15,.85); } 60% { transform:translateY(-22%) scale(.95,1.05); } 80% { transform:translateY(0) scale(1.05,.95); } 100% { transform:none; } }
+  @keyframes pn-floatdown { 0% { transform:translateY(-120%) rotate(-8deg); opacity:0; } 100% { transform:none; opacity:1; } }
+  @keyframes pn-spin { 0% { transform:rotate(-360deg) scale(.3); } 100% { transform:none; } }
+  @keyframes pn-spinback { 0% { transform:rotate(360deg) scale(.3); } 100% { transform:none; } }
+  @keyframes pn-peek { 0% { transform:translateY(110%); } 60% { transform:translateY(-8%); } 100% { transform:none; } }
+  @keyframes pn-tilt { 0% { transform:rotate(0); } 25% { transform:rotate(-14deg); } 50% { transform:rotate(10deg); } 75% { transform:rotate(-5deg); } 100% { transform:none; } }
+  @keyframes pn-zoom { 0% { transform:scale(0) rotate(20deg); } 100% { transform:none; } }
+  @keyframes pn-glow { 0% { filter:brightness(.3) blur(6px); transform:scale(.9); } 60% { filter:brightness(1.6) drop-shadow(0 0 20px #F3D27A); } 100% { filter:none; transform:none; } }
+  @keyframes pn-rocket { 0% { transform:translateY(140%) scale(.6); } 60% { transform:translateY(-14%) scale(1.08); } 100% { transform:none; } }
+  /* Every step arrives its own way */
+  @media (prefers-reduced-motion:no-preference) {
+    .ob-stage.in.s-hello { animation:ob-fade .8s ease both; }
+    .ob-stage.s-hello .ob-say { animation:ob-swing .9s .35s cubic-bezier(.2,1.3,.4,1) both; transform-origin:50% 0; }
+    .ob-stage.s-hello .ob-sub { animation:ob-blurin 1s .7s var(--ez) both; }
+    .ob-stage.in.s-name:not(.back) { animation:ob-up .7s var(--ez) both; }
+    .ob-stage.s-name .ob-in { animation:ob-grow .8s .35s var(--ez) both; transform-origin:50% 50%; }
+    .ob-stage.in.s-age:not(.back) { animation:ob-fade .5s ease both; }
+    .ob-stage.s-age .ob-chips > * { animation-name:ob-flipy; animation-duration:.6s; animation-timing-function:cubic-bezier(.2,1.2,.4,1); }
+    .ob-stage.in.s-goal:not(.back) { animation:ob-zoom .7s var(--ez) both; }
+    .ob-stage.s-goal .ob-body > *:nth-child(1) { animation:ob-fromleft .7s .3s var(--ez) both; }
+    .ob-stage.s-goal .ob-body > *:nth-child(2) { animation:ob-fromright .7s .42s var(--ez) both; }
+    .ob-stage.in.s-handoff:not(.back), .ob-stage.in.s-handback:not(.back) { animation:ob-turn .9s cubic-bezier(.2,.9,.25,1.05) both; transform-origin:50% 50%; }
+    .ob-stage.in.s-handback:not(.back) { animation-name:ob-turnback; }
+    .ob-stage.in.s-allowance:not(.back) { animation:ob-in .6s var(--ez) both; }
+    .ob-stage.s-allowance .ob-chips > * { animation-name:ob-drop; animation-duration:.6s; animation-timing-function:cubic-bezier(.3,1.5,.5,1); }
+    .ob-stage.s-allowance .ob-row > *:first-child { animation:ob-fromleft .6s .25s var(--ez) both; }
+    .ob-stage.s-allowance .ob-row > *:last-child { animation:ob-fromright .6s .32s var(--ez) both; }
+    .ob-stage.in.s-wait:not(.back) { animation:ob-fade .4s ease both; }
+    .ob-stage.s-wait .ob-card { animation:ob-deal .7s cubic-bezier(.2,1.1,.3,1) both; }
+    .ob-stage.s-wait .ob-card:nth-of-type(1) { animation-delay:.35s; --rot:-9deg; }
+    .ob-stage.s-wait .ob-card:nth-of-type(2) { animation-delay:.5s; --rot:6deg; }
+    .ob-stage.s-wait .ob-card:nth-of-type(3) { animation-delay:.65s; --rot:-4deg; }
+    .ob-stage.in.s-aha:not(.back) { animation:ob-fade .4s ease both; }
+    .ob-stage.s-aha .ob-say { animation:ob-down .7s .1s cubic-bezier(.3,1.4,.5,1) both; }
+    .ob-stage.s-aha .ob-chips > * { animation-name:ob-bounceup; animation-duration:.7s; animation-timing-function:cubic-bezier(.3,1.6,.5,1); }
+    .ob-stage.in.s-promise:not(.back) { animation:ob-blurin .9s var(--ez) both; }
+    .ob-stage.s-promise .ob-promise { animation:ob-spread 1.1s .3s var(--ez) both; }
+    .ob-stage.s-promise .ob-hold { animation:ob-spinin 1s .55s cubic-bezier(.2,1.2,.3,1) both; }
+    .ob-stage.in.s-week:not(.back) { animation:ob-up .6s var(--ez) both; }
+    .ob-stage.s-week .ob-t { animation:ob-fromleft .6s var(--ez) both; }
+    .ob-stage.s-week .ob-t:nth-child(1) { animation-delay:.3s; } .ob-stage.s-week .ob-t:nth-child(2) { animation-delay:.5s; } .ob-stage.s-week .ob-t:nth-child(3) { animation-delay:.7s; }
+    .ob-stage.in.s-pin:not(.back) { animation:ob-zoom .6s var(--ez) both; }
+    .ob-stage.in.s-done:not(.back) { animation:ob-flash 1s ease both; }
+  }
+  .ob { --ez:cubic-bezier(.16,1,.3,1); }
+  @keyframes ob-fade { from { opacity:0; } to { opacity:1; } }
+  @keyframes ob-swing { 0% { transform:perspective(500px) rotateX(-90deg); opacity:0; } 60% { transform:perspective(500px) rotateX(18deg); opacity:1; } 100% { transform:none; } }
+  @keyframes ob-blurin { from { opacity:0; filter:blur(10px); transform:scale(1.04); } to { opacity:1; filter:none; transform:none; } }
+  @keyframes ob-up { from { transform:translateY(70px); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-down { from { transform:translateY(-50px); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-grow { from { transform:scaleX(.3); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-flipy { from { transform:perspective(400px) rotateY(90deg); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-zoom { from { transform:scale(.82); opacity:0; filter:blur(6px); } to { transform:none; opacity:1; filter:none; } }
+  @keyframes ob-fromleft { from { transform:translateX(-60px); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-fromright { from { transform:translateX(60px); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-turn { from { transform:perspective(900px) rotateY(-100deg); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-turnback { from { transform:perspective(900px) rotateY(100deg); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-drop { 0% { transform:translateY(-40px); opacity:0; } 100% { transform:none; opacity:1; } }
+  @keyframes ob-deal { from { transform:translate(140px, 60px) rotate(var(--rot, -8deg)) scale(.8); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-bounceup { from { transform:translateY(60px) scale(.8); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-spread { from { letter-spacing:.4em; opacity:0; filter:blur(4px); } to { letter-spacing:normal; opacity:1; filter:none; } }
+  @keyframes ob-spinin { from { transform:rotate(-200deg) scale(.2); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-flash { 0% { opacity:0; transform:scale(.94); filter:brightness(2.2); } 60% { opacity:1; filter:brightness(1.2); } 100% { transform:none; filter:none; } }
   @keyframes ob-pop { from { transform:scale(.7); opacity:0; } to { transform:none; opacity:1; } }
   `;
 
@@ -909,7 +1105,7 @@ var WorthItOnboard = (() => {
           h("button", { class: "ob-back", type: "button", "aria-label": "Back", disabled: i === 0, on: { click: () => { clearTimeout(holdTimer); dir = "back"; i = Math.max(0, i - 1); render(); } } }, "←"),
           h("div", { class: "ob-bar", role: "progressbar", "aria-valuenow": String(pct), "aria-valuemin": "0", "aria-valuemax": "100" }, h("i", { style: `width:${Math.max(4, pct)}%` })),
           who ? h("span", { class: "ob-who" + (who === "Grown-up" ? " grown" : "") }, who) : null),
-        h("div", { class: "ob-stage in" + (dir === "back" ? " back" : "") }, h("div", { class: "ob-penny", html: PennyArt.svg(mood).replace('class="pa ', shown++ ? 'class="pa again ' : 'class="pa ') }), ...content),
+        h("div", { class: "ob-stage in s-" + steps[i] + (dir === "back" ? " back" : "") }, h("div", { class: "ob-penny", html: PennyArt.svg(mood).replace('class="pa ', shown++ ? 'class="pa again ' : 'class="pa ') }), ...content),
         h("div", { class: "ob-foot" }, go, extra || null));
       const f = el.querySelector(".ob-in, .ob-chip, .ob-card, .ob-hold, .ob-go:not(:disabled)");
       if (f && opts.autofocus !== false) setTimeout(() => f.focus({ preventScroll: true }), 50);
@@ -964,9 +1160,9 @@ var WorthItOnboard = (() => {
         const sg = suggest(a.age);
         const opts2 = [[1, "1 day", "Good for younger children"], [3, "3 days", "Works for most children"], [7, "7 days", "For bigger wants"]];
         const box = h("div", { class: "ob-body", role: "group", "aria-label": "Think-it-over wait" });
-        for (const [d, t, sub] of opts2) box.append(h("button", { class: "ob-card", type: "button", "aria-pressed": String(a.waitDays === d), on: { click: () => { a.waitDays = d; render(); } } },
+        for (const [d, t, sub] of opts2) box.append(h("button", { class: "ob-card", type: "button", "aria-pressed": String(a.waitDays === d), on: { click: (e) => { a.waitDays = d; box.querySelectorAll(".ob-card").forEach((c) => c.setAttribute("aria-pressed", String(c === e.currentTarget))); e.currentTarget.classList.add("chosen"); setTimeout(next, 420); } } },
           h("div", {}, h("b", {}, t), h("span", {}, sub)), d === sg.wait ? h("span", { class: "tag" }, "Suggested") : null));
-        frame("Grown-up", "think", [say("How long should wish-list items <b>wait</b> before deciding?"), h("p", { class: "ob-sub" }, "Waiting helps children tell a want from a need. You can change it later.")], goBtn("Continue", next));
+        frame("Grown-up", "think", [say("How long should wish-list items <b>wait</b> before deciding?"), h("p", { class: "ob-sub" }, "Tap one. Waiting helps children tell a want from a need. You can change it later.")], null);
         el.querySelector(".ob-stage").append(box);
       } else if (step === "handback") {
         frame(null, "wave", [say(`Thanks! Now pass it back to <b>${esc(nm())}</b>.`)], goBtn(a.name ? `I'm ${a.name}!` : "I'm back!", next));
@@ -2304,7 +2500,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   // ---------- screens, with transitions ----------
   var current = null;
   var pennyLayer = null;
-  var DEPTH = { setup: 0, home: 1, check: 2, me: 2, settings: 2, item: 3 };
+  var DEPTH = { auth: 0, plan: 0, setup: 0, home: 1, shop: 2, me: 2, settings: 2, product: 3 };
   var wipeAt = null;
   function screen(cls) {
     closePenny(true); hideHint();
@@ -2366,10 +2562,104 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     L.classList.add("closing"); L._shade.classList.add("closing"); setTimeout(bye, 350);
   }
 
-  // ---------- 1. first time: Penny asks the questions ----------
+  // ---------- 0. a family account (demo: only the email is kept, in this browser) ----------
+  function auth(mode) {
+    var s = screen("auth");
+    s.append(h("div", "sky"));
+    var body = h("div", "body");
+    var mk = h("img", "mark sm"); mk.src = MARK_BIG; mk.alt = "";
+    var t = html("h2", null, 'Worth<span class="gold-text">It</span>');
+    var sub = h("p", "tagline", "Money lessons for kids, right where they shop. A grown-up creates the family account.");
+    var tabs = h("div", "seg");
+    var tSign = h("button", null, "Sign up"), tLog = h("button", null, "Log in");
+    [tSign, tLog].forEach(function (b) { b.type = "button"; });
+    tSign.setAttribute("aria-pressed", String(mode !== "login")); tLog.setAttribute("aria-pressed", String(mode === "login"));
+    tSign.addEventListener("click", function () { if (mode === "login") auth("signup"); });
+    tLog.addEventListener("click", function () { if (mode !== "login") auth("login"); });
+    tabs.append(tSign, tLog);
+    var f = h("form", "form authf");
+    var em = h("input", "in"); em.type = "email"; em.placeholder = "Parent's email"; em.autocomplete = "email"; em.setAttribute("aria-label", "Parent's email");
+    if (mem.account && mem.account.email) em.value = mem.account.email;
+    var pw = h("input", "in"); pw.type = "password"; pw.placeholder = mode === "login" ? "Password" : "Create a password (8+ characters)"; pw.autocomplete = mode === "login" ? "current-password" : "new-password"; pw.setAttribute("aria-label", "Password");
+    var agree = null;
+    if (mode !== "login") {
+      agree = h("label", "agree");
+      var cb = h("input"); cb.type = "checkbox"; agree.append(cb);
+      agree.append(html("span", null, 'I’m a parent or guardian (18+) and agree to the <a href="https://aadiisthebest.github.io/Worth-IT/terms.html" target="_blank" rel="noopener">Terms</a> and <a href="https://aadiisthebest.github.io/Worth-IT/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.'));
+    }
+    var err = h("p", "err");
+    var go = h("button", "btn", mode === "login" ? "Log in" : "Create family account"); go.type = "submit";
+    f.append(em, pw); if (agree) f.append(agree); f.append(err, go);
+    f.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = em.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = "Please enter a real email address."; em.focus(); return shake(f); }
+      if (pw.value.length < 8) { err.textContent = "Passwords need at least 8 characters."; pw.focus(); return shake(f); }
+      if (agree && !agree.querySelector("input").checked) { err.textContent = "Please confirm you're a parent or guardian."; return shake(f); }
+      err.textContent = "";
+      go.disabled = true; go.textContent = mode === "login" ? "Logging in…" : "Creating your account…";
+      // Demo: the password is never stored or sent. Only the email is kept, in this browser.
+      setTimeout(function () {
+        wipeFrom(go);
+        store.set({ account: { email: email, since: mem.account && mem.account.since || Date.now() }, loggedIn: true });
+        if (mem.onboarded) home(); else if (!mem.planChosen) plan(); else setup();
+      }, REDUCE ? 50 : 700);
+    });
+    var demo = h("p", "fine", "Demo: no real account is created. Your password is never saved or sent; only the email stays in this browser.");
+    body.append(mk, t, sub, tabs, f, demo);
+    stagger([t, sub, tabs, f, demo], 0.15, 0.08);
+    s.append(body);
+  }
+  function shake(el) { el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); }
+
+  // ---------- 0b. the plan: a free week, then the family plan ----------
+  function plan() {
+    var s = screen("plan");
+    s.append(h("div", "sky"));
+    var body = h("div", "body");
+    var pb = pennyBox("wave");
+    var t = html("h3", "ptitle", 'Your <span class="gold-text">free week</span> starts today');
+    var tl = h("div", "tline");
+    [["Today", "Everything unlocked. No card needed."], ["Day 5", "We remind you before the free week ends."], ["Day 7", "Choose the family plan, or keep the free features."]].forEach(function (r, k) {
+      var row = h("div", "trow"); row.append(h("i"), html("div", null, "<b>" + r[0] + "</b><span>" + r[1] + "</span>")); row.style.animationDelay = (0.35 + k * 0.12) + "s"; tl.append(row);
+    });
+    var cards = h("div", "plans");
+    var chosen = "year";
+    function card(id, name, price, per, note, best) {
+      var c = h("button", "tier" + (id === chosen ? " on" : "")); c.type = "button"; c.dataset.id = id;
+      c.append(h("span", "pn", name), html("span", "pp", price + "<small>" + per + "</small>"), h("span", "px", note));
+      if (best) c.append(h("span", "best", best));
+      c.addEventListener("click", function () { chosen = id; cards.querySelectorAll(".tier").forEach(function (x) { x.classList.toggle("on", x === c); }); });
+      return c;
+    }
+    cards.append(card("month", "Monthly", "S$4", "/month", "Cancel any time"), card("year", "Yearly", "S$40", "/year", "S$3.33 a month", "Save 17%"));
+    var go = h("button", "btn", "Start my free week"); go.type = "button";
+    go.addEventListener("click", function () { wipeFrom(go); store.set({ planChosen: chosen, installedAt: Date.now() }); setup(); });
+    var pay = h("button", "link center", "Subscribe now instead"); pay.type = "button";
+    pay.addEventListener("click", function () { checkout(chosen, function () { wipeFrom(go); setup(); }); });
+    var fine = h("p", "fine", "After the free week, prices in days, the wish list, Learn, lessons 1–3 and badges stay free. The family plan unlocks Better buy, Save the Planet and all 8 lessons. Only a grown-up can subscribe.");
+    body.append(pb, t, tl, cards, go, pay, fine);
+    stagger([t, cards, go, pay, fine], 0.2, 0.08);
+    s.append(body);
+  }
+  // A demo checkout. The real WorthIt opens a secure page run by ExtensionPay and Stripe here; this demo asks for nothing.
+  function checkout(which, done) {
+    var shade = h("div", "shade"), sh = h("div", "sheet co");
+    var price = which === "year" ? "S$40 a year" : "S$4 a month";
+    sh.innerHTML = '<span class="demo-tag">Demo checkout · no real payment</span><h3>WorthIt family plan</h3><p class="cop">' + price + '</p><ul><li>Better buy, Save the Planet and all 8 lessons</li><li>Renews until you cancel; cancel any time</li><li>Refunds within 14 days</li></ul><p class="fine" style="text-align:left">In the real WorthIt, a secure Stripe payment page opens here and the parent enters their card there. WorthIt never sees the card.</p>';
+    var ok = h("button", "btn", "Simulate payment"); ok.type = "button";
+    var no = h("button", "btn ghost", "Go back"); no.type = "button";
+    sh.append(ok, no);
+    var close = function () { sh.classList.add("closing"); shade.classList.add("closing"); setTimeout(function () { sh.remove(); shade.remove(); }, 350); };
+    ok.addEventListener("click", function () { store.set({ planActive: true, planChosen: which }); ok.textContent = "Paid! ✓"; setTimeout(function () { close(); done && done(); }, 650); });
+    no.addEventListener("click", close); shade.addEventListener("click", close);
+    dev.append(shade, sh);
+  }
+
+  // ---------- 1. Penny asks the questions ----------
   function setup() {
     var s = screen("setup");
-    current = WorthItOnboard.mount(s, { store: store, skipSteps: ["pin"], doneLabel: "Show me around", onDone: function () {
+    current = WorthItOnboard.mount(s, { store: store, skipSteps: ["pin", "week"], doneLabel: "Show me around", onDone: function () {
       var g = dev.querySelector(".ob-go"); if (g) wipeFrom(g);
       home();
       setTimeout(startTour, REDUCE ? 200 : 1300);
@@ -2377,7 +2667,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   }
 
   // ---------- 2. the launch page ----------
-  function home() {
+  function home(invite) {
     var s = screen("home");
     s.append(h("div", "sky"));
     var dust = h("div", "dust"); dust.setAttribute("aria-hidden", "true");
@@ -2396,11 +2686,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     rank.append(h("span", "rl", "★ " + WorthItPanel.levelFor(done)), rb,
       h("span", "rn", (nextLv ? done + " of " + total + " lessons · next: " + nextLv : "All lessons done!") + "  ·  🏅 " + q.earned + " badges" + (q.streak > 1 ? "  ·  🔥 " + q.streak : "")));
     rank.dataset.hint = "Your rank. Finish money lessons to move up to Money Master.";
-    var tag = h("p", "tagline", "Every price, in days of your allowance. Think it over, learn, and find it cheaper or secondhand.");
+    var tag = h("p", "tagline", "WorthIt reads the price on any shopping page and shows it in days of your allowance.");
     var choices = h("div", "choices");
-    var a1 = pill("gold", "Check a price", "See anything in days of your allowance");
-    a1.id = "goPrice"; a1.dataset.hint = "Type anything you want and its price. I'll show it in days.";
-    a1.addEventListener("click", function () { wipeFrom(a1); check(); });
+    var a1 = pill("gold", "Launch WorthIt", "Go shopping and see prices in days");
+    a1.id = "goPrice"; a1.dataset.hint = "Open a shop. WorthIt reads each price from the screen for you.";
+    if (invite) a1.classList.add("invite");
+    a1.addEventListener("click", function () { launchWorthIt(a1); });
     var wl = Array.isArray(mem.wishlist) ? mem.wishlist.length : 0;
     var a2 = pill("dark", "My wish list & lessons", wl ? W.plural(wl, "thing") + " you're thinking over" : "Lessons, badges and things to think over");
     a2.id = "goMe"; a2.dataset.hint = "Your wish list, 8 money lessons and your badges.";
@@ -2417,58 +2708,146 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   }
   function pill(cls, title, sub) { var b = h("button", "pill " + cls); b.type = "button"; b.append(h("span", "lt", title), h("span", "ls", sub)); return b; }
 
-  // ---------- 3. check a price ----------
-  var TRIES = [
-    ["🚒", "Fire Station Building Set", 59.9], ["🛴", "Kids 3-Wheel Scooter", 39.9], ["🎮", "Mario Kart for Nintendo Switch", 69.9],
-    ["🧸", "Squishmallows plush", 24.9], ["🎨", "Crayola art set", 19.9], ["⚽", "Adidas junior football", 29.9]
-  ];
-  function check() {
-    var s = screen("check");
-    s.append(bar("Check a price", function () { home(); }));
-    var body = h("div", "body");
-    var pb = pennyBox("think");
-    var bub = html("div", "bub", "What would you like? Tell me the <b>price</b> and I'll show it in <b>days</b>.");
-    var f = h("form", "form");
-    var nm = h("input", "in"); nm.placeholder = "What is it? e.g. a new bike"; nm.maxLength = 80; nm.setAttribute("aria-label", "What is it?"); nm.autocomplete = "off";
-    var mw = h("div", "money"), cur = h("span", "cur", (W.SYMBOLS[mem.currency || "SGD"] || "$")), pr = h("input", "in");
-    pr.type = "number"; pr.min = "0.01"; pr.step = "0.01"; pr.inputMode = "decimal"; pr.placeholder = "Price"; pr.setAttribute("aria-label", "Price");
-    mw.append(cur, pr);
-    var go = h("button", "btn", "See it in days"); go.type = "submit"; go.disabled = true;
-    function ready() { go.disabled = !(nm.value.trim() && parseFloat(pr.value) > 0); }
-    nm.addEventListener("input", ready); pr.addEventListener("input", ready);
-    f.append(nm, mw, go);
-    f.addEventListener("submit", function (e) { e.preventDefault(); if (!go.disabled) { wipeFrom(go); item(nm.value.trim(), parseFloat(pr.value)); } });
-    var lbl = h("div", "klbl", "Or try one");
-    var tries = h("div", "tries"); tries.id = "tries";
-    TRIES.forEach(function (t) {
-      var b = h("button", "try"); b.type = "button";
-      b.append(h("span", "e", t[0]), h("b", null, t[1]), h("span", "p", W.money(t[2], "SGD")));
-      b.addEventListener("click", function () { wipeFrom(b); item(t[1], t[2], "SGD"); });
-      tries.append(b);
-    });
-    body.append(pb, bub, f, lbl, tries);
-    stagger([bub, f, lbl].concat(Array.prototype.slice.call(tries.children)), 0.15, 0.05);
-    s.append(body);
-    helpBtn(s, "kid");
+  // The WorthIt start-up plays once per visit; after that, Launch goes straight in.
+  var launched = false;
+  function launchWorthIt(from) {
+    if (dev.querySelector(".launch")) return;
+    if (launched) { wipeFrom(from); shop(); return; }
+    launched = true;
+    var L = h("div", "launch"); L.setAttribute("role", "status"); L.setAttribute("aria-label", "WorthIt is starting");
+    var r = from.getBoundingClientRect(), d = dev.getBoundingClientRect();
+    L.style.setProperty("--x", Math.round(r.left + r.width / 2 - d.left) + "px"); L.style.setProperty("--y", Math.round(r.top + r.height / 2 - d.top) + "px");
+    var rain = h("div", "rain"); for (var k = 0; k < 18; k++) { var c = h("i"); c.style.cssText = "left:" + (4 + (k * 41) % 92) + "%;animation-delay:" + ((k % 9) * 70) + "ms;--s:" + (0.6 + (k % 3) * 0.25); rain.append(c); }
+    var mk = h("img", "lm"); mk.src = MARK_BIG; mk.alt = "";
+    var ring = h("div", "lring");
+    var nm = html("div", "ln", 'Worth<span class="gold-text">It</span>');
+    var barEl = h("div", "lbar"); barEl.append(h("i"));
+    var tx = h("div", "lt", "Counting the coins…");
+    L.append(rain, ring, mk, nm, barEl, tx);
+    dev.append(L);
+    var ms = REDUCE ? 400 : 1900;
+    var words = ["Counting the coins…", "Getting ready to read prices…", "Ready!"];
+    words.forEach(function (w, k) { setTimeout(function () { tx.textContent = w; }, (ms / words.length) * k); });
+    setTimeout(function () { shop(true); }, ms - 250);
+    setTimeout(function () { L.classList.add("out"); setTimeout(function () { L.remove(); }, 600); }, ms);
   }
 
+  // ---------- 3. a pretend shop: WorthIt reads each product from the screen ----------
+  var PRODUCTS = [
+    { id: "fire", name: "Fire Station Building Set", price: 59.9, old: 69.9, crumb: "Home / Building sets", stars: "★★★★★ 4.9 (863 reviews)", url: "fire-station-building-set",
+      desc: "740 pieces with a ladder truck, 4 minifigures and a working alarm bell. Ages 6+.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><rect x="30" y="72" width="140" height="92" rx="4" fill="#D8483D"/><path d="M20 76 100 22l80 54z" fill="#B63A31"/><rect x="48" y="104" width="44" height="60" rx="3" fill="#F2C14E" stroke="#3A2A20" stroke-width="3"/><path d="M48 118h44M48 132h44M48 146h44" stroke="#C99A2E" stroke-width="2"/><rect x="112" y="96" width="42" height="30" rx="3" fill="#fff" stroke="#3A2A20" stroke-width="3"/><circle cx="100" cy="52" r="10" fill="#F2C14E" stroke="#3A2A20" stroke-width="3"/><rect x="26" y="162" width="148" height="6" rx="3" fill="#3A2A20"/></svg>' },
+    { id: "scooter", name: "Kids 3-Wheel Scooter", price: 39.9, old: 49.9, crumb: "Home / Outdoor", stars: "★★★★★ 4.7 (1,204 reviews)", url: "kids-3-wheel-scooter",
+      desc: "Light-up wheels, adjustable handle, folds flat. For ages 5 to 9.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><path d="M126 30 146 136" stroke="#2F6FB5" stroke-width="10" stroke-linecap="round"/><path d="M112 30h30" stroke="#1E1B16" stroke-width="10" stroke-linecap="round"/><rect x="44" y="126" width="100" height="14" rx="7" fill="#2F6FB5"/><circle cx="52" cy="148" r="16" fill="#1E1B16"/><circle cx="52" cy="148" r="7" fill="#F2C14E"/><circle cx="148" cy="148" r="16" fill="#1E1B16"/><circle cx="148" cy="148" r="7" fill="#F2C14E"/></svg>' },
+    { id: "book", name: "Glow-in-the-Dark Story Book", price: 12.9, old: 0, crumb: "Home / Books", stars: "★★★★★ 4.8 (412 reviews)", url: "glow-in-the-dark-story-book",
+      desc: "Ten bedtime stories with pages that glow after lights out. Hardback.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><path d="M100 40c-22-12-46-14-66-10v112c20-4 44-2 66 10z" fill="#3E5BA9"/><path d="M100 40c22-12 46-14 66-10v112c-20-4-44-2-66 10z" fill="#2E4686"/><path d="M100 40v112" stroke="#1E1B16" stroke-width="3"/><circle cx="136" cy="74" r="12" fill="#F6E27A"/><path d="M58 70l4 8 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1z" fill="#F6E27A"/></svg>' },
+    { id: "bike", name: "Kids bicycle 16 inch", price: 159, old: 189, crumb: "Home / Outdoor", stars: "★★★★★ 4.8 (2,031 reviews)", url: "kids-bicycle-16-inch",
+      desc: "Lightweight frame, training wheels included, bell and bottle holder. For ages 4 to 7.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><circle cx="58" cy="118" r="34" fill="none" stroke="#2B2B33" stroke-width="9"/><circle cx="146" cy="118" r="34" fill="none" stroke="#2B2B33" stroke-width="9"/><circle cx="58" cy="118" r="5" fill="#8A8A93"/><circle cx="146" cy="118" r="5" fill="#8A8A93"/><path d="M58 118l32-52h44l12 52M90 66l14 52 42-52M82 54h22M134 66l-6-20h18" fill="none" stroke="#2F9E8F" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M72 50h26" stroke="#2B2B33" stroke-width="8" stroke-linecap="round"/></svg>' },
+    { id: "truck", name: "RC monster truck", price: 49.9, old: 64.9, crumb: "Home / Remote control", stars: "★★★★☆ 4.5 (688 reviews)", url: "rc-monster-truck",
+      desc: "Big bouncy tyres, 2.4 GHz remote and a rechargeable battery. Drives on grass and sand.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><rect x="40" y="62" width="120" height="44" rx="12" fill="#D9402B"/><path d="M66 62l14-22h44l16 22z" fill="#F2A33A"/><rect x="88" y="44" width="30" height="16" rx="3" fill="#BFE3F2"/><circle cx="62" cy="122" r="26" fill="#2B2B33"/><circle cx="140" cy="122" r="26" fill="#2B2B33"/><circle cx="62" cy="122" r="10" fill="#8A8A93"/><circle cx="140" cy="122" r="10" fill="#8A8A93"/><rect x="150" y="70" width="14" height="10" rx="3" fill="#F6E27A"/></svg>' },
+    { id: "phones", name: "Bluetooth headphones", price: 79, old: 99, crumb: "Home / Tech", stars: "★★★★★ 4.6 (1,517 reviews)", url: "bluetooth-headphones",
+      desc: "Kid-safe volume limit, 30-hour battery, soft ear cushions and a fold-flat design.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><path d="M48 112V92a52 52 0 01104 0v20" fill="none" stroke="#3E5BA9" stroke-width="12" stroke-linecap="round"/><rect x="32" y="100" width="34" height="50" rx="14" fill="#2E4686"/><rect x="134" y="100" width="34" height="50" rx="14" fill="#2E4686"/><rect x="40" y="108" width="18" height="34" rx="8" fill="#7FA6F0"/><rect x="142" y="108" width="18" height="34" rx="8" fill="#7FA6F0"/></svg>' }
+  ];
+
+  function browserBar(url, onBack, badge) {
+    var b = h("div", "brow");
+    b.append(icoBtn(ICON.back, "Back", onBack));
+    var u = h("div", "url"); u.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>'; u.append(url);
+    b.append(u);
+    var w = h("button", "wiicon"); w.type = "button"; w.setAttribute("aria-label", "WorthIt"); w.dataset.hint = "The WorthIt icon. On a product it shows the price in days. Tap it to open WorthIt.";
+    var im = h("img"); im.src = MARK; im.alt = ""; w.append(im);
+    var bd = h("span", "bd"); if (badge != null) bd.textContent = badge; else bd.hidden = true; w.append(bd);
+    b.append(w);
+    return { el: b, icon: w, badge: bd };
+  }
+  function shop(fromLaunch) {
+    if (fromLaunch) wipeAt = null;
+    var s = screen("shop" + (fromLaunch ? " fromlaunch" : ""));
+    var bb = browserBar("toyshop.example/search?q=toys", function () { home(); });
+    s.append(bb.el);
+    var page = h("div", "page");
+    var head = h("div", "shophead");
+    head.innerHTML = '<span class="logo">toy<b>shop</b></span><span class="nav">Toys · Outdoor · Books · Tech</span>';
+    var search = h("div", "search"); search.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>toys for kids</span>';
+    var count = h("p", "count", PRODUCTS.length + " results for “toys for kids”");
+    var grid = h("div", "grid"); grid.id = "grid";
+    PRODUCTS.forEach(function (p, k) {
+      var c = h("button", "pcard"); c.type = "button"; c.dataset.id = p.id;
+      c.innerHTML = '<span class="pimg">' + p.svg + '</span><span class="pnm"></span><span class="ppr"></span>';
+      c.querySelector(".pnm").textContent = p.name;
+      c.querySelector(".ppr").textContent = W.money(p.price, "SGD");
+      c.style.animationDelay = (0.15 + k * 0.06) + "s";
+      c.addEventListener("click", function () { product(p); });
+      grid.append(c);
+    });
+    page.append(head, search, count, grid);
+    s.append(page);
+    helpBtn(s, "kid");
+  }
+  function product(p) {
+    var s = screen("product");
+    var dd = W.daysFor(p.price, W.withDefaults(mem));
+    var bb = browserBar("toyshop.example/" + p.url, function () { shop(); }, null);
+    s.append(bb.el);
+    var page = h("div", "page pdp");
+    page.innerHTML = '<p class="crumb"></p><div class="shot">' + p.svg + '</div><h1 class="pname" data-scan="name"></h1><p class="stars"></p><div class="prices" data-scan="price"><span class="now"></span><span class="old"></span></div><p class="desc"></p><div class="buy"><button type="button" class="cart">Add to cart</button><button type="button" class="buynow">Buy now</button></div><p class="ship">Free delivery over S$40 · 30-day returns</p>';
+    page.querySelector(".crumb").textContent = p.crumb;
+    page.querySelector(".pname").textContent = p.name;
+    page.querySelector(".stars").textContent = p.stars;
+    page.querySelector(".now").textContent = W.money(p.price, "SGD");
+    page.querySelector(".old").textContent = p.old ? W.money(p.old, "SGD") : "";
+    page.querySelector(".desc").textContent = p.desc;
+    page.querySelectorAll(".buy button").forEach(function (b) { b.addEventListener("click", function () { toast(s, "Demo shop: nothing is bought. WorthIt never buys anything."); }); });
+    s.append(page);
+    // WorthIt reads the page: a sweep of light finds the name and the price
+    var scan = h("div", "scan"); scan.innerHTML = '<i></i><span>WorthIt is reading this page…</span>';
+    s.append(scan);
+    var sheetHost = h("div", "psheet"); s.append(sheetHost);
+    var opened = false;
+    function openSheet() {
+      if (opened) return; opened = true;
+      sheetHost.classList.add("open");
+      var host = h("div", "ph"); sheetHost.append(host);
+      var root = host.attachShadow({ mode: "open" });
+      panel = WorthItPanel.create({ root: root, store: store, markUrl: MARK, mode: "embed", boot: !panelBooted,
+        product: { name: p.name, price: p.price, currency: "SGD", context: { description: p.desc } },
+        page: { url: "https://toyshop.example/" + p.url, host: "toyshop.example", key: "toyshop|" + p.id },
+        openUrl: function (u) { window.open(u, "_blank", "noopener"); },
+        openSettings: settings, onClose: closeSheet, ai: aiProvider });
+      panelBooted = true;
+      adoptFill(root);
+      current = panel;
+    }
+    function closeSheet() {
+      if (!opened) return; opened = false;
+      sheetHost.classList.remove("open");
+      var pn = panel; panel = null; current = null;
+      setTimeout(function () { if (pn) pn.destroy(); sheetHost.replaceChildren(); }, 450);
+    }
+    bb.icon.addEventListener("click", function () { if (opened) closeSheet(); else openSheet(); });
+    s._openSheet = openSheet;
+    setTimeout(function () {
+      page.querySelectorAll("[data-scan]").forEach(function (n) { n.classList.add("found"); });
+      bb.badge.hidden = false; bb.badge.textContent = dd == null ? "" : String(Math.round(dd));
+      bb.icon.classList.add("pop");
+      scan.classList.add("done"); scan.querySelector("span").textContent = "Found it: " + p.name + " · " + W.money(p.price, "SGD");
+    }, REDUCE ? 100 : 1200);
+    setTimeout(function () { scan.classList.add("gone"); if (!tour) openSheet(); }, REDUCE ? 300 : 2300);
+    helpBtn(s, "kid");
+  }
+  var panelBooted = false;
+  function toast(s, text) { var t = h("div", "toast", text); s.append(t); setTimeout(function () { t.classList.add("out"); setTimeout(function () { t.remove(); }, 400); }, 2200); }
+
   // ---------- 4. the WorthIt panel, full screen ----------
-  var FILL = ".wi.embed, .wi.toolbar { height:100%; max-height:none; border:0; border-radius:0; box-shadow:none; } .wi .penny-help { left:12px; }";
+  var FILL = ".wi.embed, .wi.toolbar { height:100%; max-height:none; border:0; border-radius:0; box-shadow:none; } .wi .penny-help { left:12px; } :host(.touring) .penny-help { display:none; }";
   function adoptFill(root) {
     try { var sh = new CSSStyleSheet(); sh.replaceSync(FILL); root.adoptedStyleSheets = root.adoptedStyleSheets.concat([sh]); }
     catch (e) { var st = document.createElement("style"); st.textContent = FILL; root.appendChild(st); }
-  }
-  function item(name, price, currency) {
-    var s = screen("item");
-    var host = h("div", "ph"); s.append(host);
-    var root = host.attachShadow({ mode: "open" });
-    panel = WorthItPanel.create({ root: root, store: store, markUrl: MARK, mode: "embed", boot: true,
-      product: { name: name, price: price, currency: currency || mem.currency || "SGD", context: { description: "" } },
-      page: { url: "https://www.google.com/search?tbm=shop&q=" + encodeURIComponent(name), host: "", key: "app|" + name.toLowerCase() },
-      openUrl: function (u) { window.open(u, "_blank", "noopener"); },
-      openSettings: settings, onClose: function () { check(); }, ai: aiProvider });
-    adoptFill(root);
-    current = panel;
   }
   function me(tab) {
     var s = screen("me");
@@ -2476,7 +2855,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var root = host.attachShadow({ mode: "open" });
     panel = WorthItPanel.create({ root: root, store: store, markUrl: MARK, mode: "toolbar", boot: false,
       openUrl: function (u) { window.open(u, "_blank", "noopener"); },
-      openSettings: settings, onClose: function () { home(); }, onItem: check });
+      openSettings: settings, onClose: function () { home(); }, onItem: function () { shop(); } });
     adoptFill(root);
     if (tab) panel.setTab(tab);
     current = panel;
@@ -2519,6 +2898,14 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
       ok.style.color = ""; ok.textContent = "Saved!";
       setTimeout(function () { ok.textContent = ""; }, 2200);
     });
+    var c4 = h("div", "card");
+    var pst = WorthItPlan.state(mem, Date.now());
+    c4.append(h("h2", null, "Family account"), h("p", null, (mem.account ? mem.account.email + " \u00b7 " : "") + (pst.mode === "paid" ? "Family plan active" : pst.mode === "trial" ? "Free week: " + W.plural(pst.daysLeft, "day") + " left" : "Free plan")));
+    var acts4 = h("div", "fields");
+    if (pst.mode !== "paid") { var up = h("button", "btn", "Unlock the family plan"); up.type = "button"; up.addEventListener("click", function () { checkout(mem.planChosen || "year", function () { settings(); }); }); acts4.append(up); }
+    var lo = h("button", "btn ghost", "Log out"); lo.type = "button";
+    lo.addEventListener("click", function () { store.set({ loggedIn: false }); auth("login"); });
+    acts4.append(lo); c4.append(acts4);
     var c3 = h("div", "card");
     var replay = h("button", "btn ghost", "Run Penny's setup again with your child"); replay.type = "button";
     replay.addEventListener("click", function () { store.set({ onboarded: false }); setup(); });
@@ -2526,12 +2913,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var armed = false;
     wipe.addEventListener("click", function () {
       if (!armed) { armed = true; wipe.textContent = "Tap again to erase everything"; setTimeout(function () { armed = false; wipe.textContent = "Erase everything on this device"; }, 4000); return; }
-      mem = { installedAt: Date.now() }; persist(); setup();
+      mem = { installedAt: Date.now() }; persist(); auth("signup");
     });
     var g3 = h("div", "fields"); g3.append(replay, wipe); c3.append(g3);
     var fine = html("p", "fine", "Everything stays in this browser. No account, no ads, no tracking.<br><a href=\"https://aadiisthebest.github.io/Worth-IT/privacy.html\" target=\"_blank\" rel=\"noopener\">Privacy</a> · <a href=\"https://aadiisthebest.github.io/Worth-IT/terms.html\" target=\"_blank\" rel=\"noopener\">Terms</a> · © 2026 the WorthIt team");
     var sv = h("div", "fields"); sv.style.marginBottom = "12px"; sv.append(save, ok);
-    body.append(c, c2, sv, c3, fine);
+    body.append(c, c2, sv, c4, c3, fine);
     s.append(body);
     var FIELD = { amount: fAmt, name: fName, waitDays: fWait };
     helpBtn(s, "parent", function (a) {
@@ -2545,16 +2932,16 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
 
   // ---------- 5. the guided tour: Penny shows each part, the child does it ----------
   var TOUR = [
-    { find: function () { return aq("#goPrice"); }, title: "Check any price", text: "Everything starts here. Tap <b>Check a price</b>.", tap: true },
-    { find: function () { return aq("#tries"); }, match: ".try", title: "Pick something", text: "Tap any toy to try it. Later you can type <b>anything</b> you want, with its price.", tap: true },
-    { find: function () { return pq(".days") || null; }, title: "The price, in days", text: "This is the price in <b>days of your allowance</b>. A big number means: think it over!" },
+    { find: function () { return aq("#goPrice"); }, title: "Launch WorthIt", text: "Everything starts here. Tap <b>Launch WorthIt</b>.", tap: true },
+    { find: function () { return dev.querySelector(".launch") ? null : aq("#grid"); }, match: ".pcard", title: "Go shopping", text: "This is a pretend shop. <b>Tap any toy</b> you like.", tap: true },
+    { find: function () { var e = aq(".prices.found"); return e && aq(".scan.gone") ? e : null; }, title: "I read the screen", text: "WorthIt reads the <b>name and price</b> right off the page. No typing needed!", onNext: function () { var sc = dev.querySelector(".scr:not(.leaving)"); if (sc && sc._openSheet) sc._openSheet(); } },
+    { find: function () { return pq(".days") || null; }, title: "The price, in days", text: "Here it is in <b>days of your allowance</b>. A big number means: think it over!" },
     { find: function () { return pq('[data-act="wish"]'); }, title: "Not sure? Wait.", text: "Tap <b>Save to my wish list</b>. It waits a few days, then you decide with a grown-up.", tap: true },
     { find: function () { return pq('[data-tab="learn"]'); }, title: "Learn", text: "<b>Learn</b> shows what else this money could be. Tap it.", tap: true },
     { find: function () { return pq('[data-tab="better"]'); }, title: "Better buy", text: "<b>Better buy</b> finds the same thing cheaper, or secondhand to help the planet. Tap it.", tap: true },
     { find: function () { return pq('[data-area="me"]'); }, title: "Your space", text: "Your <b>wish list, money lessons and badges</b> live here. Tap it.", tap: true },
     { find: function () { return pq('[data-tab="lessons"]'); }, title: "Money lessons", text: "8 short lessons, one question each. Finish them to rise from Coin Starter to <b>Money Master</b>." },
-    { find: function () { return pq(".penny-help"); }, title: "I'm always here", text: "Stuck anywhere? Tap my face and I'll explain the screen you're on." },
-    { final: true, title: "Your turn!", text: "That's WorthIt. Now explore on your own. On a computer, <b>hover over anything</b> and I'll whisper what it does." }
+    { final: true, title: "Your turn!", text: "That's WorthIt. Now explore on your own. Stuck? <b>Tap my face</b> in the bottom-left corner any time. On a computer, hover over anything and I'll whisper what it does." }
   ];
   var tour = null;
   function startTour() {
@@ -2566,16 +2953,20 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     tour.el.append(mask, ring, card);
     tour.mask = mask; tour.ring = ring; tour.card = card;
     dev.append(tour.el);
+    dev.classList.add("touring");
     document.addEventListener("click", onTourClick, true);
     showStep();
     loop();
   }
-  function endTour() {
+  function endTour(goHome) {
     if (!tour) return;
     cancelAnimationFrame(tour.raf);
     document.removeEventListener("click", onTourClick, true);
     tour.el.remove(); tour = null;
+    dev.classList.remove("touring");
+    dev.querySelectorAll(".ph").forEach(function (x) { x.classList.remove("touring"); });
     store.set({ toured: true });
+    if (goHome) home(true);
   }
   function showStep() {
     var st = TOUR[tour.i];
@@ -2589,7 +2980,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
       var bp = h("div", "bigp"); bp.innerHTML = WorthItPenny.art("cheer");
       c.append(bp, h("span", "ti", st.title), html("p", null, st.text));
       var ft = h("div", "ft"); ft.style.justifyContent = "center";
-      var go = h("button", "nx", "Start exploring"); go.type = "button"; go.addEventListener("click", endTour);
+      var go = h("button", "nx", "Start exploring"); go.type = "button"; go.addEventListener("click", function () { endTour(true); });
       ft.append(go); c.append(ft);
       c.style.top = "50%"; c.style.transform = "translateY(-50%)";
       return;
@@ -2599,10 +2990,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     hd.append(fc, h("span", "ti", st.title), h("span", "ct", (tour.i + 1) + " / " + (TOUR.length - 1)));
     var ft = h("div", "ft"), dots = h("div", "dots");
     for (var k = 0; k < TOUR.length - 1; k++) { var d = h("i"); if (k === tour.i) d.className = "on"; dots.append(d); }
-    var sk = h("button", "sk", "Skip tour"); sk.type = "button"; sk.addEventListener("click", endTour);
+    var sk = h("button", "sk", "Skip tour"); sk.type = "button"; sk.addEventListener("click", function () { endTour(true); });
     ft.append(dots, sk);
     if (st.tap) { var tp = h("span", "tap"); tp.append(h("i"), "Tap it"); ft.append(tp); }
-    else { var nx = h("button", "nx", "Next"); nx.type = "button"; nx.addEventListener("click", nextStep); ft.append(nx); }
+    else { var nx = h("button", "nx", "Next"); nx.type = "button"; nx.addEventListener("click", function () { if (st.onNext) st.onNext(); nextStep(); }); ft.append(nx); }
     c.append(hd, html("p", null, st.text), ft);
     tour.target = null;
   }
@@ -2612,16 +3003,19 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var st = TOUR[tour.i];
     if (!st.tap || !tour.target) return;
     var path = e.composedPath();
-    var hit = path.indexOf(tour.target) >= 0 || (st.match && path.some(function (n) { return n.matches && n.matches(st.match); }));
+    var hit = st.match ? path.some(function (n) { return n.matches && n.matches(st.match); }) : path.indexOf(tour.target) >= 0;
     if (hit) setTimeout(nextStep, 120);
   }
   function loop() {
     if (!tour) return;
+    dev.querySelectorAll(".ph").forEach(function (x) { x.classList.add("touring"); });
     var st = TOUR[tour.i];
     if (!st.final) {
       var el = st.find();
       var d = dev.getBoundingClientRect(), W2 = d.width, H2 = d.height;
-      if (el && el.getClientRects().length) {
+      var showIt = !!(el && el.getClientRects().length);
+      tour.mask.style.opacity = showIt ? "1" : "0"; tour.card.style.opacity = showIt ? "1" : "0"; tour.card.style.pointerEvents = showIt ? "auto" : "none";
+      if (showIt) {
         tour.target = el;
         var r = el.getBoundingClientRect(), pad = 6;
         var x = Math.max(4, r.left - d.left - pad), y = Math.max(4, r.top - d.top - pad), w = Math.min(W2 - x - 4, r.width + pad * 2), hh = Math.min(H2 - y - 4, r.height + pad * 2);
@@ -2695,8 +3089,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   document.getElementById("enter").addEventListener("click", function () {
     intro.classList.add("leave");
     app.hidden = false;
-    if (mem.onboarded) { home(); if (!mem.toured) setTimeout(startTour, REDUCE ? 200 : 1200); }
-    else setup();
+    if (!mem.loggedIn) auth(mem.account ? "login" : "signup");
+    else if (!mem.planChosen) plan();
+    else if (!mem.onboarded) setup();
+    else { home(); if (!mem.toured) setTimeout(startTour, REDUCE ? 200 : 1200); }
     setTimeout(function () { intro.remove(); }, REDUCE ? 0 : 800);
   });
   setTimeout(function () { try { document.getElementById("enter").focus({ preventScroll: true }); } catch (e) {} }, 1000);
