@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>toyshop · demo product page for WorthIt</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #FAFAF7; color: #1D1D22; }
+  header { display: flex; align-items: center; gap: 18px; padding: 14px 24px; background: #fff; border-bottom: 1px solid #E8E6E0; flex-wrap: wrap; }
+  .logo { font-weight: 800; font-size: 24px; letter-spacing: -.03em; color: #D9402B; text-decoration: none; } .logo b { color: #1D1D22; }
+  .search { flex: 1; min-width: 200px; padding: 10px 14px; border: 1px solid #E5E3DD; border-radius: 12px; color: #6B6B72; font-size: 14px; }
+  .note { background: #FFF6DF; color: #6B4E12; font-size: 13px; padding: 8px 24px; }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 60px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; }
+  @media (max-width: 760px) { main { grid-template-columns: minmax(0, 1fr); } }
+  .shot { background: #F3F1EC; border-radius: 20px; aspect-ratio: 10 / 8; } .shot svg { width: 100%; height: 100%; display: block; }
+  .crumb { font-size: 13px; color: #6B6B72; margin: 0 0 8px; }
+  h1 { margin: 0 0 6px; font-size: 30px; line-height: 1.2; }
+  .stars { color: #B8860B; font-size: 14px; margin: 0 0 14px; }
+  .price { font-size: 34px; font-weight: 800; } .old { color: #9A9AA2; text-decoration: line-through; margin-left: 10px; }
+  .desc { color: #44444C; line-height: 1.6; }
+  .buy { display: flex; gap: 10px; margin-top: 18px; } .buy button { flex: 1; border: 0; border-radius: 12px; padding: 14px; font-weight: 700; font-size: 15px; cursor: not-allowed; }
+  .cart { background: #1D1D22; color: #fff; } .now { background: #D9402B; color: #fff; }
+  .more { max-width: 1040px; margin: 0 auto; padding: 0 16px 60px; }
+  .more h2 { font-size: 18px; } .row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .row a { display: block; background: #fff; border: 1px solid #E8E6E0; border-radius: 14px; padding: 10px; color: inherit; text-decoration: none; font-size: 13px; }
+  .row a svg { width: 100%; height: auto; background: #F3F1EC; border-radius: 10px; display: block; margin-bottom: 6px; } .row b { color: #D9402B; display: block; }
+</style>
+</head>
+<body>
+<header><a class="logo" href="shop.html">toy<b>shop</b></a><div class="search">toys for kids</div></header>
+<div class="note">Demo shop for trying WorthIt. Nothing here is for sale. Click the WorthIt icon in Chrome's toolbar to see this price in days.</div>
+<main id="main"></main>
+<section class="more"><h2>More toys</h2><div class="row" id="row"></div></section>
+<script>
+  var PRODUCTS = [
+    { id: "fire", name: "Fire Station Building Set", price: 59.9, old: 69.9, crumb: "Home / Building sets", stars: "★★★★★ 4.9 (863 reviews)", url: "fire-station-building-set",
+      desc: "740 pieces with a ladder truck, 4 minifigures and a working alarm bell. Ages 6+.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><rect x="30" y="72" width="140" height="92" rx="4" fill="#D8483D"/><path d="M20 76 100 22l80 54z" fill="#B63A31"/><rect x="48" y="104" width="44" height="60" rx="3" fill="#F2C14E" stroke="#3A2A20" stroke-width="3"/><path d="M48 118h44M48 132h44M48 146h44" stroke="#C99A2E" stroke-width="2"/><rect x="112" y="96" width="42" height="30" rx="3" fill="#fff" stroke="#3A2A20" stroke-width="3"/><circle cx="100" cy="52" r="10" fill="#F2C14E" stroke="#3A2A20" stroke-width="3"/><rect x="26" y="162" width="148" height="6" rx="3" fill="#3A2A20"/></svg>' },
+    { id: "scooter", name: "Kids 3-Wheel Scooter", price: 39.9, old: 49.9, crumb: "Home / Outdoor", stars: "★★★★★ 4.7 (1,204 reviews)", url: "kids-3-wheel-scooter",
+      desc: "Light-up wheels, adjustable handle, folds flat. For ages 5 to 9.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><path d="M126 30 146 136" stroke="#2F6FB5" stroke-width="10" stroke-linecap="round"/><path d="M112 30h30" stroke="#1E1B16" stroke-width="10" stroke-linecap="round"/><rect x="44" y="126" width="100" height="14" rx="7" fill="#2F6FB5"/><circle cx="52" cy="148" r="16" fill="#1E1B16"/><circle cx="52" cy="148" r="7" fill="#F2C14E"/><circle cx="148" cy="148" r="16" fill="#1E1B16"/><circle cx="148" cy="148" r="7" fill="#F2C14E"/></svg>' },
+    { id: "book", name: "Glow-in-the-Dark Story Book", price: 12.9, old: 0, crumb: "Home / Books", stars: "★★★★★ 4.8 (412 reviews)", url: "glow-in-the-dark-story-book",
+      desc: "Ten bedtime stories with pages that glow after lights out. Hardback.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><path d="M100 40c-22-12-46-14-66-10v112c20-4 44-2 66 10z" fill="#3E5BA9"/><path d="M100 40c22-12 46-14 66-10v112c-20-4-44-2-66 10z" fill="#2E4686"/><path d="M100 40v112" stroke="#1E1B16" stroke-width="3"/><circle cx="136" cy="74" r="12" fill="#F6E27A"/><path d="M58 70l4 8 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1z" fill="#F6E27A"/></svg>' },
+    { id: "bike", name: "Kids bicycle 16 inch", price: 159, old: 189, crumb: "Home / Outdoor", stars: "★★★★★ 4.8 (2,031 reviews)", url: "kids-bicycle-16-inch",
+      desc: "Lightweight frame, training wheels included, bell and bottle holder. For ages 4 to 7.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><circle cx="58" cy="118" r="34" fill="none" stroke="#2B2B33" stroke-width="9"/><circle cx="146" cy="118" r="34" fill="none" stroke="#2B2B33" stroke-width="9"/><circle cx="58" cy="118" r="5" fill="#8A8A93"/><circle cx="146" cy="118" r="5" fill="#8A8A93"/><path d="M58 118l32-52h44l12 52M90 66l14 52 42-52M82 54h22M134 66l-6-20h18" fill="none" stroke="#2F9E8F" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M72 50h26" stroke="#2B2B33" stroke-width="8" stroke-linecap="round"/></svg>' },
+    { id: "truck", name: "RC monster truck", price: 49.9, old: 64.9, crumb: "Home / Remote control", stars: "★★★★☆ 4.5 (688 reviews)", url: "rc-monster-truck",
+      desc: "Big bouncy tyres, 2.4 GHz remote and a rechargeable battery. Drives on grass and sand.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><rect x="40" y="62" width="120" height="44" rx="12" fill="#D9402B"/><path d="M66 62l14-22h44l16 22z" fill="#F2A33A"/><rect x="88" y="44" width="30" height="16" rx="3" fill="#BFE3F2"/><circle cx="62" cy="122" r="26" fill="#2B2B33"/><circle cx="140" cy="122" r="26" fill="#2B2B33"/><circle cx="62" cy="122" r="10" fill="#8A8A93"/><circle cx="140" cy="122" r="10" fill="#8A8A93"/><rect x="150" y="70" width="14" height="10" rx="3" fill="#F6E27A"/></svg>' },
+    { id: "phones", name: "Bluetooth headphones", price: 79, old: 99, crumb: "Home / Tech", stars: "★★★★★ 4.6 (1,517 reviews)", url: "bluetooth-headphones",
+      desc: "Kid-safe volume limit, 30-hour battery, soft ear cushions and a fold-flat design.",
+      svg: '<svg viewBox="0 0 200 180" aria-hidden="true"><path d="M48 112V92a52 52 0 01104 0v20" fill="none" stroke="#3E5BA9" stroke-width="12" stroke-linecap="round"/><rect x="32" y="100" width="34" height="50" rx="14" fill="#2E4686"/><rect x="134" y="100" width="34" height="50" rx="14" fill="#2E4686"/><rect x="40" y="108" width="18" height="34" rx="8" fill="#7FA6F0"/><rect x="142" y="108" width="18" height="34" rx="8" fill="#7FA6F0"/></svg>' }
+  ];
+
+  var id = new URLSearchParams(location.search).get("p") || "fire";
+  var p = PRODUCTS.filter(function (x) { return x.id === id; })[0] || PRODUCTS[0];
+  document.title = p.name + " · toyshop";
+  var ld = document.createElement("script"); ld.type = "application/ld+json";
+  ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Product", name: p.name, description: p.desc, offers: { "@type": "Offer", price: p.price.toFixed(2), priceCurrency: "SGD", availability: "https://schema.org/InStock" } });
+  document.head.append(ld);
+  var m = document.getElementById("main");
+  m.innerHTML = '<div class="shot">' + p.svg + '</div><div><p class="crumb"></p><h1></h1><p class="stars"></p><div><span class="price"></span><span class="old"></span></div><p class="desc"></p><div class="buy"><button class="cart" disabled>Add to cart</button><button class="now" disabled>Buy now</button></div></div>';
+  m.querySelector(".crumb").textContent = p.crumb; m.querySelector("h1").textContent = p.name; m.querySelector(".stars").textContent = p.stars;
+  m.querySelector(".price").textContent = "S$" + p.price.toFixed(2); m.querySelector(".old").textContent = p.old ? "S$" + p.old.toFixed(2) : ""; m.querySelector(".desc").textContent = p.desc;
+  var row = document.getElementById("row");
+  PRODUCTS.forEach(function (x) { if (x.id === p.id) return; var a = document.createElement("a"); a.href = "shop.html?p=" + x.id; a.innerHTML = x.svg; a.append(x.name); var b = document.createElement("b"); b.textContent = "S$" + x.price.toFixed(2); a.append(b); row.append(a); });
+</script>
+</body>
+</html>
