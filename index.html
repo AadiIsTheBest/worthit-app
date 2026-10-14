@@ -2585,7 +2585,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     if (mode !== "login") {
       agree = h("label", "agree");
       var cb = h("input"); cb.type = "checkbox"; agree.append(cb);
-      agree.append(html("span", null, 'I’m a parent or guardian (18+) and agree to the <a href="https://aadiisthebest.github.io/Worth-IT/terms.html" target="_blank" rel="noopener">Terms</a> and <a href="https://aadiisthebest.github.io/Worth-IT/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.'));
+      agree.append(html("span", null, 'I’m a parent or guardian (18+) and agree to the <a href="https://aadiisthebest.github.io/worthit-app/terms.html" target="_blank" rel="noopener">Terms</a> and <a href="https://aadiisthebest.github.io/worthit-app/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.'));
     }
     var err = h("p", "err");
     var go = h("button", "btn", mode === "login" ? "Log in" : "Create family account"); go.type = "submit";
@@ -2916,7 +2916,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
       mem = { installedAt: Date.now() }; persist(); auth("signup");
     });
     var g3 = h("div", "fields"); g3.append(replay, wipe); c3.append(g3);
-    var fine = html("p", "fine", "Everything stays in this browser. No account, no ads, no tracking.<br><a href=\"https://aadiisthebest.github.io/Worth-IT/privacy.html\" target=\"_blank\" rel=\"noopener\">Privacy</a> · <a href=\"https://aadiisthebest.github.io/Worth-IT/terms.html\" target=\"_blank\" rel=\"noopener\">Terms</a> · © 2026 the WorthIt team");
+    var fine = html("p", "fine", "Everything stays in this browser. No account, no ads, no tracking.<br><a href=\"https://aadiisthebest.github.io/worthit-app/privacy.html\" target=\"_blank\" rel=\"noopener\">Privacy</a> · <a href=\"https://aadiisthebest.github.io/worthit-app/terms.html\" target=\"_blank\" rel=\"noopener\">Terms</a> · © 2026 the WorthIt team");
     var sv = h("div", "fields"); sv.style.marginBottom = "12px"; sv.append(save, ok);
     body.append(c, c2, sv, c4, c3, fine);
     s.append(body);
