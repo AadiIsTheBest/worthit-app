@@ -2601,8 +2601,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
       // Demo: the password is never stored or sent. Only the email is kept, in this browser.
       setTimeout(function () {
         wipeFrom(go);
-        store.set({ account: { email: email, since: mem.account && mem.account.since || Date.now() }, loggedIn: true });
-        if (mem.onboarded) home(); else if (!mem.planChosen) plan(); else setup();
+        var known = mem.account && mem.account.email === email && mem.onboardedFor === email;
+        if (mode !== "login" || !known) {
+          // a new family (or a new email on this browser): Penny's questions and the tour run again
+          store.set({ onboarded: false, onboardedFor: null, toured: false, planChosen: mode !== "login" ? null : mem.planChosen });
+        }
+        store.set({ account: { email: email, since: Date.now() }, loggedIn: true });
+        if (known && mode === "login") home(); else if (!mem.planChosen) plan(); else setup();
       }, REDUCE ? 50 : 700);
     });
     var demo = h("p", "fine", "Demo: no real account is created. Your password is never saved or sent; only the email stays in this browser.");
@@ -2660,6 +2665,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   function setup() {
     var s = screen("setup");
     current = WorthItOnboard.mount(s, { store: store, skipSteps: ["pin", "week"], doneLabel: "Show me around", onDone: function () {
+      store.set({ onboardedFor: mem.account ? mem.account.email : "" });
       var g = dev.querySelector(".ob-go"); if (g) wipeFrom(g);
       home();
       setTimeout(startTour, REDUCE ? 200 : 1300);
@@ -3091,7 +3097,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     app.hidden = false;
     if (!mem.loggedIn) auth(mem.account ? "login" : "signup");
     else if (!mem.planChosen) plan();
-    else if (!mem.onboarded) setup();
+    else if (!mem.onboarded || mem.onboardedFor !== (mem.account && mem.account.email)) setup();
     else { home(); if (!mem.toured) setTimeout(startTour, REDUCE ? 200 : 1200); }
     setTimeout(function () { intro.remove(); }, REDUCE ? 0 : 800);
   });
