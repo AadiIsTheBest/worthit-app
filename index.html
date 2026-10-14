@@ -51,6 +51,43 @@
   .scr:not(.leaving) { z-index: 2; }
   .ph { position: absolute; inset: 0; }
 
+  /* ---------- presenter rail: jump between the steps, and what the real WorthIt does at each one ---------- */
+  .app { gap: 34px; }
+  .rail { flex: 0 0 258px; max-height: min(880px, calc(100dvh - 48px)); overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 18px 16px; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(180deg, rgba(228,176,74,.05), rgba(255,255,255,.01)); }
+  .rk { font: 600 10px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--gold-hi); }
+  .rh b { display: block; font: 700 18px var(--display); margin-top: 3px; letter-spacing: -.01em; }
+  .rs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .rs button { width: 100%; display: flex; gap: 11px; align-items: flex-start; text-align: left; border: 0; background: transparent; color: var(--mute); padding: 8px 9px; border-radius: 12px; cursor: pointer; transition: background .25s, color .25s; }
+  .rs button:hover { background: rgba(228,176,74,.07); color: var(--text); }
+  .rs button i { flex: 0 0 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 700 11px var(--mono); font-style: normal; border: 1px solid var(--line2); color: var(--gold-hi); margin-top: 1px; }
+  .rs button span { display: flex; flex-direction: column; font: 600 14px var(--display); }
+  .rs button small { font: 500 11.5px var(--body); color: var(--faint); margin-top: 1px; }
+  .rs button.on { background: linear-gradient(180deg, rgba(228,176,74,.16), rgba(228,176,74,.05)); color: var(--text); box-shadow: inset 0 0 0 1px var(--line2); }
+  .rs button.on i { background: linear-gradient(180deg, #F5D686, var(--gold)); color: #17120A; border-color: transparent; }
+  .rs button.done i { background: rgba(228,176,74,.18); }
+  .rnote { border-radius: 14px; padding: 12px 13px; background: rgba(143,209,166,.06); border: 1px solid rgba(143,209,166,.22); }
+  .rnote .rk { color: var(--green); }
+  .rnote p { margin: 6px 0 0; font-size: 12.5px; line-height: 1.55; color: var(--text); }
+  .rnav { display: flex; gap: 8px; }
+  .rnav button { flex: 1; border-radius: 999px; padding: 10px 12px; font: 700 13.5px var(--display); cursor: pointer; border: 1px solid var(--line2); background: transparent; color: var(--text); }
+  .rnav button.nx { border: 0; background: linear-gradient(180deg, #F5D686, var(--gold) 55%, var(--gold-lo)); color: #17120A; }
+  .rnav button:disabled { opacity: .35; cursor: default; }
+  .rtm .seg { margin: 7px 0 0; width: 100%; box-sizing: border-box; }
+  .rtm .seg button { flex: 1; padding: 7px 8px; font-size: 12.5px; }
+  .rcur { display: none; }
+  @media (max-width: 900px) {
+    .app { flex-direction: column; justify-content: flex-start; align-items: center; gap: 10px; padding: 10px 16px 16px; }
+    .rail { flex: 0 0 auto; width: 100%; max-width: 440px; box-sizing: border-box; max-height: none; overflow: visible; flex-direction: row; align-items: center; gap: 8px; padding: 6px; border-radius: 999px; }
+    .rh, .rs, .rnote, .rtm { display: none; }
+    .rcur { display: block; flex: 1; min-width: 0; text-align: center; font: 600 13px var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rnav { display: contents; }
+    .rnav button { flex: 0 0 auto; padding: 8px 14px; }
+    .dev { flex: 0 0 auto; height: calc(100dvh - 78px); }
+  }
+  @media (max-width: 520px) { .app { padding: 6px 0 0; gap: 6px; } .rail { width: calc(100% - 16px); } .dev { height: calc(100dvh - 58px); } }
+  .realnote { margin: 12px 0 0; font-size: 11.5px; line-height: 1.55; color: var(--mute); text-align: left; border-left: 2px solid var(--green); padding: 4px 0 4px 10px; max-width: 340px; }
+  .realnote b { color: var(--green); font-weight: 700; }
+
   .bar { display: flex; align-items: center; gap: 10px; padding: 16px 18px 10px; flex: 0 0 auto; position: relative; z-index: 2; }
   .bar h1 { margin: 0; font: 600 17px var(--display); letter-spacing: .01em; }
   .bar .sp { flex: 1; }
@@ -286,6 +323,8 @@
     .scr.in-wipe { animation: wipe .8s cubic-bezier(.7,0,.2,1) both; z-index: 3; }
     .scr.out-wipe { animation: sink .8s var(--ease) both; }
     .home .mark { animation: rise .9s .1s var(--ease) both, float 5s 1s ease-in-out infinite; }
+    .home.calm .mark { animation: float 5s ease-in-out infinite; }
+    .home.calm .rise { animation: none; }
     .rise { animation: rise .8s var(--ease) both; }
     .shade { animation: fade-in .35s ease both; }
     .sheet { animation: sheet-up .6s var(--ease) both; }
@@ -2569,6 +2608,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
       if (old) old.remove();
       dev.insertBefore(s, dev.querySelector(".coach, .hint"));
     }
+    setTimeout(function () { if (rail) railSync(); }, 0);
     return s;
   }
   function wipeFrom(el) { var r = el.getBoundingClientRect(), d = dev.getBoundingClientRect(); wipeAt = { x: Math.round(r.left + r.width / 2 - d.left), y: Math.round(r.top + r.height / 2 - d.top) }; }
@@ -2612,6 +2652,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   // ---------- 0. a family account (demo: only the email is kept, in this browser) ----------
   function auth(mode) {
     var s = screen("auth");
+    railSync(mode === "login" ? "login" : "signup");
     s.append(h("div", "sky"));
     var body = h("div", "body");
     var mk = h("img", "mark sm"); mk.src = MARK_BIG; mk.alt = "";
@@ -2654,10 +2695,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
           store.set({ onboarded: false, onboardedFor: null, toured: false, planChosen: mode !== "login" ? null : mem.planChosen });
         }
         store.set({ account: { email: email, since: Date.now() }, loggedIn: true });
-        if (known && mode === "login") home(); else if (!mem.planChosen) plan(); else setup();
+        if (!mem.trialStartedAt) store.set({ trialStartedAt: Date.now(), installedAt: Date.now() });
+        if (known && mode === "login") home(); else setup();
       }, REDUCE ? 50 : 700);
     });
-    var demo = h("p", "fine", "Demo: no real account is created. Your password is never saved or sent; only the email stays in this browser.");
+    var demo = html("p", "realnote", mode === "login"
+      ? "<b>In the real WorthIt:</b> you only log in on a new computer. ExtensionPay emails a one-time code, and your plan and free week come back by themselves. Demo: nothing is saved or sent."
+      : "<b>In the real WorthIt:</b> the parent makes the account once on ExtensionPay's secure page (email + a one-time code) and stays logged in on that computer. Demo: nothing is saved or sent.");
     body.append(mk, t, sub, tabs, f, demo);
     stagger([t, sub, tabs, f, demo], 0.15, 0.08);
     s.append(body);
@@ -2667,6 +2711,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   // ---------- 0b. the plan: a free week, then the family plan ----------
   function plan() {
     var s = screen("plan");
+    railSync("plan");
     s.append(h("div", "sky"));
     var body = h("div", "body");
     var pb = pennyBox("wave");
@@ -2690,19 +2735,21 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var pay = h("button", "link center", "Subscribe now instead"); pay.type = "button";
     pay.addEventListener("click", function () { checkout(chosen, function () { wipeFrom(go); setup(); }); });
     var fine = h("p", "fine", "After the free week, the free plan keeps prices in days for 3 things a day, the wish list, Learn, lessons 1\u20133 and badges. The family plan adds unlimited price checks, Better buy, Save the Planet and all 8 lessons. Only a grown-up can subscribe.");
-    body.append(pb, t, tl, cards, go, pay, fine);
+    var rn = html("p", "realnote", "<b>In the real WorthIt</b> this comes right after the account is made. Subscribe opens a secure Stripe page in a new tab; WorthIt never sees the card.");
+    body.append(pb, t, tl, cards, go, pay, fine, rn);
     stagger([t, cards, go, pay, fine], 0.2, 0.08);
     s.append(body);
   }
   // A demo checkout. The real WorthIt opens a secure page run by ExtensionPay and Stripe here; this demo asks for nothing.
   function checkout(which, done) {
+    railSync("checkout");
     var shade = h("div", "shade"), sh = h("div", "sheet co");
     var price = which === "year" ? "S$40 a year" : "S$4 a month";
     sh.innerHTML = '<span class="demo-tag">Demo checkout · no real payment</span><h3>WorthIt family plan</h3><p class="cop">' + price + '</p><ul><li>Better buy, Save the Planet and all 8 lessons</li><li>Renews until you cancel; cancel any time</li><li>Refunds within 14 days</li></ul><p class="fine" style="text-align:left">In the real WorthIt, a secure Stripe payment page opens here and the parent enters their card there. WorthIt never sees the card.</p>';
     var ok = h("button", "btn", "Simulate payment"); ok.type = "button";
     var no = h("button", "btn ghost", "Go back"); no.type = "button";
     sh.append(ok, no);
-    var close = function () { sh.classList.add("closing"); shade.classList.add("closing"); setTimeout(function () { sh.remove(); shade.remove(); }, 350); };
+    var close = function () { sh.classList.add("closing"); shade.classList.add("closing"); railSync(); setTimeout(function () { sh.remove(); shade.remove(); }, 350); };
     ok.addEventListener("click", function () { store.set({ planActive: true, planChosen: which }); ok.textContent = "Paid! ✓"; setTimeout(function () { close(); done && done(); }, 650); });
     no.addEventListener("click", close); shade.addEventListener("click", close);
     dev.append(shade, sh);
@@ -2711,6 +2758,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   // ---------- 1. Penny asks the questions ----------
   function setup() {
     var s = screen("setup");
+    railSync("setup");
     current = WorthItOnboard.mount(s, { store: store, skipSteps: ["pin", "week"], doneLabel: "Show me around", onDone: function () {
       store.set({ onboardedFor: mem.account ? mem.account.email : "" });
       var g = dev.querySelector(".ob-go"); if (g) wipeFrom(g);
@@ -2720,8 +2768,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   }
 
   // ---------- 2. the launch page ----------
+  var homeSeen = false;
   function home(invite) {
-    var s = screen("home");
+    var s = screen("home" + (homeSeen ? " calm" : ""));
+    homeSeen = true;
+    railSync();
     s.append(h("div", "sky"));
     var dust = h("div", "dust"); dust.setAttribute("aria-hidden", "true");
     for (var k = 0; k < 10; k++) { var d = h("i"); d.style.cssText = "left:" + (8 + (k * 37) % 84) + "%;top:" + (8 + (k * 53) % 70) + "%;--t:" + (3 + k % 3) + "s;--d:" + (k * .4) + "s"; dust.append(d); }
@@ -2765,15 +2816,20 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   }
   function pill(cls, title, sub) { var b = h("button", "pill " + cls); b.type = "button"; b.append(h("span", "lt", title), h("span", "ls", sub)); return b; }
 
-  // The WorthIt start-up plays once per visit; after that, Launch goes straight in.
-  var launched = false;
+  // Launch WorthIt opens the shop straight away. The start-up screen plays once, after the tour (see startup()).
   function launchWorthIt(from) {
     if (dev.querySelector(".launch")) return;
-    if (launched) { wipeFrom(from); shop(); return; }
-    launched = true;
+    wipeFrom(from); shop();
+  }
+  var started = false;
+  function startup(then, force) {
+    if (dev.querySelector(".launch")) return;
+    if (started && !force) { then(); return; }
+    started = true;
+    railSync("startup");
+    var from = dev;
     var L = h("div", "launch"); L.setAttribute("role", "status"); L.setAttribute("aria-label", "WorthIt is starting");
-    var r = from.getBoundingClientRect(), d = dev.getBoundingClientRect();
-    L.style.setProperty("--x", Math.round(r.left + r.width / 2 - d.left) + "px"); L.style.setProperty("--y", Math.round(r.top + r.height / 2 - d.top) + "px");
+    L.style.setProperty("--x", "50%"); L.style.setProperty("--y", "50%");
     var rain = h("div", "rain"); for (var k = 0; k < 18; k++) { var c = h("i"); c.style.cssText = "left:" + (4 + (k * 41) % 92) + "%;animation-delay:" + ((k % 9) * 70) + "ms;--s:" + (0.6 + (k % 3) * 0.25); rain.append(c); }
     var mk = h("img", "lm"); mk.src = MARK_BIG; mk.alt = "";
     var ring = h("div", "lring");
@@ -2785,8 +2841,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var ms = REDUCE ? 400 : 1900;
     var words = ["Counting the coins…", "Getting ready to read prices…", "Ready!"];
     words.forEach(function (w, k) { setTimeout(function () { tx.textContent = w; }, (ms / words.length) * k); });
-    setTimeout(function () { shop(true); }, ms - 250);
-    setTimeout(function () { L.classList.add("out"); setTimeout(function () { L.remove(); }, 600); }, ms);
+    setTimeout(function () { then(); }, ms - 250);
+    setTimeout(function () { L.classList.add("out"); setTimeout(function () { L.remove(); railSync(); }, 600); }, ms);
   }
 
   // ---------- 3. a pretend shop: WorthIt reads each product from the screen ----------
@@ -2859,7 +2915,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     page.querySelector(".now").textContent = W.money(p.price, "SGD");
     page.querySelector(".old").textContent = p.old ? W.money(p.old, "SGD") : "";
     page.querySelector(".desc").textContent = p.desc;
-    page.querySelectorAll(".buy button").forEach(function (b) { b.addEventListener("click", function () { toast(s, "Demo shop: nothing is bought. WorthIt never buys anything."); }); });
+    page.querySelectorAll(".buy button").forEach(function (b) { b.addEventListener("click", function () { toast(s, "Pretend shop: nothing is bought. In the real WorthIt, this is a real shop's own button, and WorthIt never buys anything."); }); });
     s.append(page);
     // WorthIt reads the page: a sweep of light finds the name and the price
     var scan = h("div", "scan"); scan.innerHTML = '<i></i><span>WorthIt is reading this page…</span>';
@@ -2871,7 +2927,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
       sheetHost.classList.add("open");
       var host = h("div", "ph"); sheetHost.append(host);
       var root = host.attachShadow({ mode: "open" });
-      panel = WorthItPanel.create({ root: root, store: store, markUrl: MARK, mode: "embed", boot: !panelBooted,
+      panel = WorthItPanel.create({ root: root, store: store, markUrl: MARK, mode: "embed", boot: false,
         product: { name: p.name, price: p.price, currency: "SGD", context: { description: p.desc } },
         page: { url: "https://toyshop.example/" + p.url, host: "toyshop.example", key: "toyshop|" + p.id },
         openUrl: function (u) { window.open(u, "_blank", "noopener"); },
@@ -2963,9 +3019,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var lo = h("button", "btn ghost", "Log out"); lo.type = "button";
     lo.addEventListener("click", function () { store.set({ loggedIn: false }); auth("login"); });
     acts4.append(lo); c4.append(acts4);
+    c4.append(html("p", "realnote", "<b>In the real WorthIt:</b> Unlock opens a secure Stripe page through ExtensionPay. Manage plan opens ExtensionPay's page to change, cancel or get receipts. Refunds within 14 days."));
     // Presenter tools: show the free week, the reminder and the free plan without waiting a week.
     var c5 = h("div", "card");
-    c5.append(h("h2", null, "Demo: time machine"), h("p", null, "For presenting. Jump to a day of the free week to show the reminder and the free plan (3 price checks a day)."));
+    c5.append(h("h2", null, "Demo: time machine"), h("p", null, "For presenting. Jump to a day of the free week to show the reminder and the free plan (3 price checks a day). The real WorthIt simply counts the days."));
     var seg = h("div", "seg tm");
     var cur = Math.floor((Date.now() - (mem.trialStartedAt || Date.now())) / 864e5) + 1;
     [[1, "Day 1"], [6, "Day 6"], [8, "Day 8"]].forEach(function (d) {
@@ -2985,7 +3042,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
       mem = { installedAt: Date.now() }; persist(); auth("signup");
     });
     var g3 = h("div", "fields"); g3.append(replay, wipe); c3.append(g3);
-    var fine = html("p", "fine", "Everything stays in this browser. No account, no ads, no tracking.<br><a href=\"https://aadiisthebest.github.io/worthit-app/privacy.html\" target=\"_blank\" rel=\"noopener\">Privacy</a> · <a href=\"https://aadiisthebest.github.io/worthit-app/terms.html\" target=\"_blank\" rel=\"noopener\">Terms</a> · © 2026 the WorthIt team");
+    var fine = html("p", "fine", "Demo: nothing is saved, and closing the tab starts again. In the real WorthIt, settings stay on your computer and only the parent's email goes to ExtensionPay. No ads, no tracking.<br><a href=\"https://aadiisthebest.github.io/worthit-app/privacy.html\" target=\"_blank\" rel=\"noopener\">Privacy</a> · <a href=\"https://aadiisthebest.github.io/worthit-app/terms.html\" target=\"_blank\" rel=\"noopener\">Terms</a> · © 2026 the WorthIt team");
     var sv = h("div", "fields"); sv.style.marginBottom = "12px"; sv.append(save, ok);
     body.append(c, c2, sv, c4, c5, c3, fine);
     s.append(body);
@@ -3010,7 +3067,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     { find: function () { return pq('[data-tab="better"]'); }, title: "Better buy", text: "<b>Better buy</b> finds the same thing cheaper, or secondhand to help the planet. Tap it.", tap: true },
     { find: function () { return pq('[data-area="me"]'); }, title: "Your space", text: "Your <b>wish list, money lessons and badges</b> live here. Tap it.", tap: true },
     { find: function () { return pq('[data-tab="lessons"]'); }, title: "Money lessons", text: "8 short lessons, one question each. Finish them to rise from Coin Starter to <b>Money Master</b>." },
-    { final: true, title: "Your turn!", text: "That's WorthIt. Now explore on your own. Stuck? <b>Tap my face</b> in the bottom-left corner any time. On a computer, hover over anything and I'll whisper what it does." }
+    { final: true, title: "Your turn!", text: "That's WorthIt! Next, WorthIt starts up for real, then it's all yours. Stuck? <b>Tap my face</b> in the corner any time. On a computer, hover over anything and I'll whisper what it does." }
   ];
   var tour = null;
   function startTour() {
@@ -3018,6 +3075,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     closePenny(true);
     if (!dev.querySelector('.scr:not(.leaving)[data-name="home"]')) home();
     tour = { i: 0, el: h("div", "coach"), raf: 0 };
+    railSync("tour");
     var mask = h("div", "coach-mask"), ring = h("div", "coach-ring"), card = h("div", "coach-card");
     tour.el.append(mask, ring, card);
     tour.mask = mask; tour.ring = ring; tour.card = card;
@@ -3035,7 +3093,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     dev.classList.remove("touring");
     dev.querySelectorAll(".ph").forEach(function (x) { x.classList.remove("touring"); });
     store.set({ toured: true });
-    if (goHome) home(true);
+    if (goHome) startup(function () { home(true); });
   }
   function showStep() {
     var st = TOUR[tour.i];
@@ -3151,6 +3209,105 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     });
   }
 
+  // ---------- presenter rail: move back and forth through the steps, and say what the real WorthIt does ----------
+  var STEPS = [
+    { id: "signup", name: "Sign up", sub: "A grown-up makes the family account",
+      real: "The parent creates the account once on ExtensionPay's secure page: their email, confirmed with a one-time code. No password to remember. WorthIt then stays logged in on that computer." },
+    { id: "login", name: "Log in", sub: "Only on a new computer",
+      real: "Only needed on a new or reset computer. ExtensionPay emails a code, and the plan and free week come back by themselves. Every other day, WorthIt just opens." },
+    { id: "plan", name: "Free week & plan", sub: "S$4 a month or S$40 a year",
+      real: "Shown right after the account is made. “Start my free week” unlocks everything for 7 days with no card. On day 5 WorthIt reminds the parent. After day 7: the free plan (3 price checks a day) or the family plan." },
+    { id: "checkout", name: "Payment", sub: "Stripe, through ExtensionPay",
+      real: "A secure Stripe page opens in a new tab. The parent pays by card or Apple/Google Pay; WorthIt never sees the card. The plan switches on within seconds and renews until cancelled from Parent settings." },
+    { id: "setup", name: "Penny's setup", sub: "Name, age and allowance",
+      real: "The same in the real WorthIt: Penny asks the child's name, age and allowance. It's kept on the computer and never sent anywhere." },
+    { id: "tour", name: "Guided tour", sub: "Penny shows each part",
+      real: "In the real WorthIt the child does this on real shops: Amazon, Shopee, Lazada, Toys“R“Us and more. WorthIt reads the name and price from the page itself." },
+    { id: "startup", name: "Start-up", sub: "The WorthIt logo and bar",
+      real: "In the real WorthIt this start-up plays each time the child launches WorthIt on a shop. No logging in again." },
+    { id: "explore", name: "Explore", sub: "Free use, Penny in the corner",
+      real: "The real WorthIt works on real shopping sites, and everything is saved on the computer. This demo uses a pretend shop and forgets everything when the tab closes." }
+  ];
+  var rail = null, railAt = "signup";
+  function railSync(id) {
+    if (!id) id = tour ? "tour" : dev.querySelector(".launch") ? "startup" : dev.querySelector(".sheet.co:not(.closing)") ? "checkout" : (function () {
+      var c = dev.querySelector(".scr:not(.leaving)"); var n = c && c.dataset.name;
+      return n === "auth" ? railAt : n === "plan" ? "plan" : n === "setup" ? "setup" : "explore"; })();
+    railAt = id;
+    if (!rail) return;
+    var at = STEPS.findIndex(function (x) { return x.id === id; });
+    rail.querySelectorAll(".rs button").forEach(function (b, k) { b.classList.toggle("on", k === at); b.classList.toggle("done", k < at); if (k === at) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+    rail.querySelector(".rnote p").textContent = STEPS[at].real;
+    rail.querySelector(".rcur").textContent = (at + 1) + " of " + STEPS.length + " · " + STEPS[at].name;
+    rail.querySelector(".rnav .bk").disabled = at === 0;
+    rail.querySelector(".rnav .nx").disabled = at === STEPS.length - 1;
+  }
+  function needAccount() {
+    if (!mem.account) store.set({ account: { email: "parent@example.com", since: Date.now() } });
+    if (!mem.trialStartedAt) store.set({ trialStartedAt: Date.now(), installedAt: Date.now() });
+    store.set({ loggedIn: true });
+  }
+  function needSetup() {
+    needAccount();
+    if (!mem.onboarded) store.set({ name: mem.name || "Sam", age: mem.age || "9", amount: mem.amount || 10, period: mem.period || "week", currency: mem.currency || "SGD", waitDays: mem.waitDays || 3, onboarded: true, pennySeen: true });
+    store.set({ onboardedFor: mem.account.email });
+  }
+  function clearOverlays() {
+    if (tour) endTour(false);
+    closePenny(true); hideHint();
+    dev.querySelectorAll(".sheet.co, .shade").forEach(function (x) { x.remove(); });
+    var L = dev.querySelector(".launch"); if (L) L.remove();
+  }
+  function goStep(id) {
+    clearOverlays();
+    if (id === "signup") { store.set({ loggedIn: false }); auth("signup"); }
+    else if (id === "login") { needAccount(); store.set({ loggedIn: false }); auth("login"); }
+    else if (id === "plan") { needAccount(); plan(); }
+    else if (id === "checkout") { needAccount(); plan(); setTimeout(function () { checkout("year", function () { setup(); }); }, REDUCE ? 50 : 500); }
+    else if (id === "setup") { needAccount(); store.set({ onboarded: false }); setup(); }
+    else if (id === "tour") { needSetup(); home(); setTimeout(startTour, REDUCE ? 100 : 700); }
+    else if (id === "startup") { needSetup(); store.set({ toured: true }); startup(function () { home(true); }, true); }
+    else { needSetup(); store.set({ toured: true }); home(); }
+  }
+  function buildRail() {
+    if (rail) return;
+    rail = h("aside", "rail"); rail.setAttribute("aria-label", "Presenter: demo steps");
+    rail.append(html("div", "rh", '<span class="rk">Presenter</span><b>Demo steps</b>'));
+    var ol = h("ol", "rs");
+    STEPS.forEach(function (st, k) {
+      var li = h("li"), b = h("button"); b.type = "button";
+      b.innerHTML = "<i>" + (k + 1) + "</i><span>" + esc(st.name) + "<small>" + esc(st.sub) + "</small></span>";
+      b.addEventListener("click", function () { goStep(st.id); });
+      li.append(b); ol.append(li);
+    });
+    var note = html("div", "rnote", '<span class="rk">In the real WorthIt</span><p></p>');
+    var nav = h("div", "rnav");
+    var bk = h("button", "bk", "‹ Back"), nx = h("button", "nx", "Next ›"); bk.type = nx.type = "button";
+    var cur = h("span", "rcur");
+    bk.addEventListener("click", function () { var k = STEPS.findIndex(function (x) { return x.id === railAt; }); if (k > 0) goStep(STEPS[k - 1].id); });
+    nx.addEventListener("click", function () { var k = STEPS.findIndex(function (x) { return x.id === railAt; }); if (k < STEPS.length - 1) goStep(STEPS[k + 1].id); });
+    nav.append(bk, cur, nx);
+    var tm = html("div", "rtm", '<span class="rk">Time machine · demo only</span>');
+    var seg = h("div", "seg");
+    [[1, "Day 1"], [6, "Day 6"], [8, "Day 8"]].forEach(function (d) {
+      var b = h("button", null, d[1]); b.type = "button";
+      b.addEventListener("click", function () {
+        clearOverlays(); needSetup();
+        store.set({ trialStartedAt: Date.now() - (d[0] - 1) * 864e5 - 60000, planActive: false, scans: null, toured: true });
+        seg.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        var c = dev.querySelector(".scr:not(.leaving)"); if (c && c.dataset.name === "settings") settings(); else home();
+      });
+      seg.append(b);
+    });
+    tm.append(seg);
+    rail.append(ol, note, nav, tm);
+    // the steps sit to the left of the device; on a phone they shrink to a Back / Next bar on top
+    nav.querySelector(".rcur").textContent = "";
+    rail.insertBefore(nav, ol.nextSibling);
+    app.insertBefore(rail, dev);
+    railSync(railAt);
+  }
+
   // ---------- the entrance ----------
   var dust = document.getElementById("dust");
   for (var i = 0; i < 26; i++) { var d = document.createElement("i"); d.style.cssText = "left:" + (4 + (i * 53) % 92) + "%;top:" + (6 + (i * 37) % 88) + "%;--t:" + (3 + i % 4) + "s;--d:" + (i % 7) * .5 + "s"; dust.append(d); }
@@ -3158,8 +3315,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   document.getElementById("enter").addEventListener("click", function () {
     intro.classList.add("leave");
     app.hidden = false;
+    buildRail();
     if (!mem.loggedIn) auth(mem.account ? "login" : "signup");
-    else if (!mem.planChosen) plan();
     else if (!mem.onboarded || mem.onboardedFor !== (mem.account && mem.account.email)) setup();
     else { home(); if (!mem.toured) setTimeout(startTour, REDUCE ? 200 : 1200); }
     setTimeout(function () { intro.remove(); }, REDUCE ? 0 : 800);
