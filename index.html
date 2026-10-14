@@ -30,6 +30,7 @@
   /* ---------- the entrance: the logo, huge, and one button ---------- */
   .intro { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(20px, 4vh, 48px);
     padding: 24px 16px; background: radial-gradient(70% 60% at 50% 45%, #241B0F 0%, #100C08 55%, var(--bg) 100%); overflow: hidden; }
+  .intro::before { content: ""; position: absolute; left: 50%; top: 46%; width: min(80vw, 900px); height: min(50vw, 560px); transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(228,176,74,.22), transparent); opacity: .7; pointer-events: none; will-change: opacity, transform; }
   .intro .logo { width: min(92vw, 1000px, 92vh); height: auto; position: relative; z-index: 1; filter: drop-shadow(0 20px 60px rgba(228,176,74,.25)); }
   .dust i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--gold-hi); opacity: .2; box-shadow: 0 0 8px var(--gold); }
   .enter { position: relative; z-index: 1; border: 0; cursor: pointer; border-radius: 999px; padding: 17px 54px; display: inline-flex; align-items: center; gap: 12px;
@@ -113,7 +114,7 @@
   .planchip.ended { color: var(--mute); }
   .tagline { margin: 16px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--mute); max-width: 30ch; }
   .choices { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 310px; }
-  .pill { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; border-radius: 999px; padding: 14px 22px; cursor: pointer; transition: transform .3s var(--ease), box-shadow .3s, border-color .3s, filter .3s; }
+  .pill { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; border-radius: 999px; padding: 14px 22px; cursor: pointer; transition: transform .3s var(--ease), box-shadow .3s, border-color .3s, filter .3s; }
   .pill .lt { font: 700 17px var(--display); letter-spacing: .01em; }
   .pill .ls { font: 500 11.5px var(--body); opacity: .72; }
   .pill.gold { border: 0; color: #17120A; background: linear-gradient(180deg, #F5D686, var(--gold) 55%, var(--gold-lo)); box-shadow: 0 14px 38px rgba(228,176,74,.3), inset 0 1px 0 rgba(255,255,255,.55); }
@@ -171,7 +172,7 @@
   .flash { box-shadow: 0 0 0 3px var(--gold) !important; }
 
   /* Penny's chat slides up as a sheet */
-  .shade { position: absolute; inset: 0; z-index: 19; background: rgba(5,4,3,.6); backdrop-filter: blur(2px); }
+  .shade { position: absolute; inset: 0; z-index: 19; background: rgba(5,4,3,.68); }
   .sheet { position: absolute; left: 0; right: 0; bottom: 0; height: 84%; z-index: 20; background: linear-gradient(180deg, #16120D, #0E0B08); border-top: 1px solid var(--line2); border-radius: 28px 28px 0 0; padding: 24px 16px 16px; display: flex; flex-direction: column; box-shadow: 0 -20px 60px rgba(0,0,0,.6); }
   .sheet::before { content: ""; position: absolute; top: 9px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 99px; background: var(--line2); }
   .sheet .pn { height: 100%; }
@@ -180,7 +181,7 @@
   /* the guided tour: a spotlight, a ring and Penny's card */
   .coach { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
   .coach-mask { position: absolute; inset: 0; background: rgba(5,4,3,.74); pointer-events: auto; transition: clip-path .5s var(--ease), opacity .4s; }
-  .coach-ring { position: absolute; border-radius: 18px; box-shadow: 0 0 0 2px var(--gold), 0 0 0 7px rgba(228,176,74,.18), 0 0 40px rgba(228,176,74,.45); transition: all .5s var(--ease); pointer-events: none; }
+  .coach-ring { position: absolute; border-radius: 18px; box-shadow: 0 0 0 2px var(--gold), 0 0 0 7px rgba(228,176,74,.18), 0 0 40px rgba(228,176,74,.45); transition: left .45s var(--ease), top .45s var(--ease), width .45s var(--ease), height .45s var(--ease), opacity .3s; pointer-events: none; }
   .coach-card { position: absolute; left: 16px; right: 16px; max-width: 380px; margin: 0 auto; pointer-events: auto; background: linear-gradient(180deg, #1D1812, #120E0A); border: 1px solid var(--line2); border-radius: 20px; padding: 14px 16px 12px;
     box-shadow: 0 24px 60px rgba(0,0,0,.6), 0 0 40px -10px rgba(228,176,74,.25); transition: top .5s var(--ease), opacity .3s; }
   .coach-card .hd { display: flex; align-items: center; gap: 10px; }
@@ -213,6 +214,7 @@
   .launch .lring { position: absolute; left: 50%; top: 42%; width: 140px; height: 140px; margin: -70px 0 0 -70px; border-radius: 50%; border: 1.5px solid rgba(243,210,122,.6); box-shadow: 0 0 40px rgba(228,176,74,.4); }
   .launch .rain i { position: absolute; top: -20px; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFF1BF, #E4B04A 55%, #9A6F1E); box-shadow: 0 0 10px rgba(228,176,74,.5); transform: scale(var(--s)); opacity: 0; }
   .launch.out { animation: fade-out .6s ease forwards; }
+  .launch .rain i, .launch .lm, .launch .lring, .dust i { will-change: transform, opacity; }
   .pill.invite { box-shadow: 0 0 0 0 rgba(228,176,74,.55), 0 14px 38px rgba(228,176,74,.3), inset 0 1px 0 rgba(255,255,255,.55); }
   .scr.fromlaunch { animation: none !important; }
 
@@ -292,7 +294,7 @@
   [data-scan] { transition: box-shadow .4s, background .4s; }
   [data-scan].found { box-shadow: 0 0 0 2px #E4B04A, 0 0 18px rgba(228,176,74,.45); border-radius: 8px; background: rgba(228,176,74,.08); }
   .scan { position: absolute; left: 0; right: 0; top: 57px; bottom: 0; z-index: 5; pointer-events: none; overflow: hidden; }
-  .scan i { position: absolute; left: 0; right: 0; height: 90px; top: -90px; background: linear-gradient(180deg, transparent, rgba(228,176,74,.28) 70%, rgba(243,210,122,.95) 98%, transparent); }
+  .scan i { position: absolute; left: 0; right: 0; height: 90px; top: -90px; will-change: transform; background: linear-gradient(180deg, transparent, rgba(228,176,74,.28) 70%, rgba(243,210,122,.95) 98%, transparent); }
   .scan span { position: absolute; left: 0; right: 0; margin: 0 auto; width: max-content; bottom: 22px; white-space: nowrap; max-width: 88%; overflow: hidden; text-overflow: ellipsis; background: #15110C; color: var(--gold-hi); border: 1px solid var(--line2); border-radius: 999px; padding: 8px 14px; font: 600 12px var(--display); box-shadow: 0 10px 30px rgba(0,0,0,.4); }
   .scan.done i { animation: none; opacity: 0; transition: opacity .3s; }
   .scan.gone { opacity: 0; transition: opacity .4s; }
@@ -301,7 +303,7 @@
   .toast { position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%); z-index: 8; background: #15110C; color: var(--text); border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; font-size: 12.5px; max-width: 86%; text-align: center; animation: rise .4s var(--ease) both; }
   .toast.out { opacity: 0; transition: opacity .4s; }
   @media (prefers-reduced-motion: no-preference) { .scan i { animation: sweep 1.1s cubic-bezier(.5,0,.5,1) .1s both; } .scan span { animation: rise .5s var(--ease) both; } }
-  @keyframes sweep { from { top: -90px; } to { top: 100%; } }
+  @keyframes sweep { from { transform: translateY(0); } to { transform: translateY(calc(var(--h, 900px) + 90px)); } }
 
   /* hover hints */
   .hint { position: absolute; z-index: 45; max-width: 230px; pointer-events: none; background: #1D1812; border: 1px solid var(--line2); color: var(--text); border-radius: 12px; padding: 8px 11px; font: 500 12.5px/1.45 var(--body);
@@ -310,7 +312,8 @@
   .hint .fc { width: 22px; height: 22px; flex: 0 0 auto; border-radius: 50%; overflow: hidden; }
 
   @media (prefers-reduced-motion: no-preference) {
-    .intro .logo { animation: logo-in 1.2s var(--ease) both, logo-glow 5s 1.3s ease-in-out infinite; }
+    .intro .logo { animation: logo-in 1.2s var(--ease) both; }
+    .intro::before { animation: glow-breathe 5s 1.3s ease-in-out infinite; }
     .dust i { animation: twinkle var(--t) var(--d) ease-in-out infinite; }
     .enter { animation: rise .9s .8s var(--ease) both; }
     .intro.leave { animation: intro-out .8s var(--ease) forwards; }
@@ -332,7 +335,7 @@
     .shade.closing { animation: fade-out .35s ease both; }
     .coach-card { animation: rise .6s var(--ease) both; }
     .coach-card .tap i { animation: ping 1.4s ease-out infinite; }
-    .coach-ring { animation: ring 2s ease-in-out infinite; }
+    .coach-ring::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 3px var(--gold-hi); animation: ring-out 2s ease-out infinite; will-change: transform, opacity; }
     .launch { animation: launch-in .55s cubic-bezier(.7,0,.2,1) both; }
     .launch .lm { animation: lm-in .9s .15s cubic-bezier(.2,1.3,.3,1) both, lm-pulse 1.2s 1s ease-in-out infinite; }
     .launch .ln { animation: rise .7s .35s var(--ease) both; }
@@ -340,15 +343,16 @@
     .launch .lbar i { animation: lbar 1.75s .1s cubic-bezier(.6,0,.3,1) forwards; }
     .launch .lt { animation: rise .5s .5s var(--ease) both; }
     .launch .rain i { animation: coinfall 1.4s ease-in forwards; }
-    .pill.invite { animation: rise .8s var(--ease) both, invite 2s 1.2s ease-out infinite; }
+    .pill.invite { animation: rise .8s var(--ease) both; }
+    .pill.invite::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 3px rgba(228,176,74,.6); pointer-events: none; animation: ring-out 2s 1.2s ease-out infinite; will-change: transform, opacity; opacity: 0; }
   }
-  @keyframes logo-in { from { opacity: 0; transform: translateY(30px) scale(.92); filter: blur(12px); } to { opacity: 1; transform: none; filter: drop-shadow(0 20px 60px rgba(228,176,74,.25)); } }
-  @keyframes logo-glow { 50% { filter: drop-shadow(0 20px 90px rgba(228,176,74,.42)); } }
+  @keyframes logo-in { from { opacity: 0; transform: translateY(30px) scale(.92); } to { opacity: 1; transform: none; } }
+  @keyframes glow-breathe { 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); } }
   @keyframes twinkle { 0%, 100% { opacity: .08; transform: scale(.6); } 50% { opacity: .6; transform: scale(1.2); } }
   @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
   @keyframes intro-out { to { opacity: 0; visibility: hidden; } }
-  @keyframes logo-out { to { transform: scale(1.18); opacity: 0; filter: blur(10px); } }
-  @keyframes dev-in { from { opacity: 0; transform: translateY(30px) scale(.97); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+  @keyframes logo-out { to { transform: scale(1.18); opacity: 0; } }
+  @keyframes dev-in { from { opacity: 0; transform: translateY(30px) scale(.97); } to { opacity: 1; transform: none; } }
   @keyframes in-fwd { from { transform: translateX(60px); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes in-back { from { transform: translateX(-60px); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes out-fwd { to { transform: translateX(-40px); opacity: 0; } }
@@ -362,13 +366,14 @@
   @keyframes sheet-down { to { transform: translateY(100%); } }
   @keyframes launch-in { from { clip-path: circle(0 at var(--x) var(--y)); } to { clip-path: circle(150% at var(--x) var(--y)); } }
   @keyframes lm-in { 0% { transform: scale(.2) rotate(-25deg); opacity: 0; } 70% { transform: scale(1.12) rotate(4deg); opacity: 1; } 100% { transform: none; } }
-  @keyframes lm-pulse { 50% { transform: scale(1.05); filter: drop-shadow(0 0 60px rgba(228,176,74,.75)); } }
+  @keyframes lm-pulse { 50% { transform: scale(1.05); } }
   @keyframes lring { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.6); opacity: 0; } }
   @keyframes lbar { to { width: 100%; } }
   @keyframes coinfall { 0% { opacity: 0; transform: translateY(0) scale(var(--s)) rotate(0); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateY(620px) scale(var(--s)) rotate(540deg); } }
   @keyframes invite { 0% { box-shadow: 0 0 0 0 rgba(228,176,74,.55), 0 14px 38px rgba(228,176,74,.3), inset 0 1px 0 rgba(255,255,255,.55); } 100% { box-shadow: 0 0 0 18px rgba(228,176,74,0), 0 14px 38px rgba(228,176,74,.3), inset 0 1px 0 rgba(255,255,255,.55); } }
   @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(228,176,74,.6); } 100% { box-shadow: 0 0 0 10px rgba(228,176,74,0); } }
-  @keyframes ring { 50% { box-shadow: 0 0 0 2px var(--gold-hi), 0 0 0 10px rgba(228,176,74,.12), 0 0 56px rgba(228,176,74,.55); } }
+  @keyframes ring-out { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(1.12); } }
+  @keyframes ring-old { 50% { box-shadow: 0 0 0 2px var(--gold-hi), 0 0 0 10px rgba(228,176,74,.12), 0 0 56px rgba(228,176,74,.55); } }
 </style>
 
 </head>
@@ -537,15 +542,15 @@ var WorthItQuest = (() => {
     { id: "firstLook", icon: "👀", name: "First Look", did: "You looked at a price in days.", how: "Launch WorthIt on a shopping page." },
     { id: "curious", icon: "💡", name: "Curious Mind", did: "You checked what else that money could be.", how: "Open Learn to see what else a price could be." },
     { id: "thinker", icon: "🤔", name: "Big Thinker", did: "You saved it to think it over.", how: "Save something to your wish list to think it over." },
-    { id: "patient", icon: "⏳", name: "Patient Pocket", did: "You waited before deciding.", how: "Wait out the think-it-over days, then decide." },
-    { id: "changedMind", icon: "🔄", name: "Changed My Mind", did: "You thought it over and changed your mind. Smart!", how: "Decide you don't need something after all." },
+    { id: "patient", secret: true, icon: "⏳", name: "Patient Pocket", did: "You waited before deciding.", how: "Wait out the think-it-over days, then decide." },
+    { id: "changedMind", secret: true, icon: "🔄", name: "Changed My Mind", did: "You thought it over and changed your mind. Smart!", how: "Decide you don't need something after all." },
     { id: "bargain", icon: "🔍", name: "Bargain Hunter", did: "You looked for a better price.", how: "Look for the same thing cheaper in Better buy." },
     { id: "planetPal", icon: "🌱", name: "Planet Pal", did: "You looked for it secondhand.", how: "Look for it secondhand with Save the Planet." },
     { id: "learner", icon: "📘", name: "First Lesson", did: "You finished your first lesson.", how: "Finish your first money lesson." },
     { id: "smartSaver", icon: "🐷", name: "Smart Saver", did: "You finished 3 lessons.", how: "Finish 3 money lessons." },
     { id: "master", icon: "👑", name: "Money Master", did: "You finished every lesson!", how: "Finish all 8 money lessons." },
     { id: "streak3", icon: "🔥", name: "3-Day Streak", did: "3 days in a row!", how: "Learn or think it over 3 days in a row." },
-    { id: "streak7", icon: "🌟", name: "7-Day Streak", did: "7 days in a row!", how: "Learn or think it over 7 days in a row." },
+    { id: "streak7", secret: true, icon: "🌟", name: "7-Day Streak", did: "7 days in a row!", how: "Learn or think it over 7 days in a row." },
     { id: "questDone", icon: "🏆", name: "Quest Champion", did: "You finished the Starter Quest!", how: "Finish the Starter Quest." },
   ];
 
@@ -1013,22 +1018,22 @@ var WorthItOnboard = (() => {
     .ob-hold.made { animation:ob-boom .5s cubic-bezier(.2,1.6,.4,1); }
     .ob-unlock { animation:ob-flipin .8s .5s cubic-bezier(.2,1.3,.3,1) both; }
     .ob-unlock .md { animation:ob-spin 1.2s .7s cubic-bezier(.2,.9,.3,1) both; }
-    .ob-unlock::after { animation:ob-sweep 2.4s 1.4s ease-in-out infinite; }
+    .ob-unlock::after { animation:ob-sweep 2.4s 1.4s ease-in-out infinite; will-change:transform; }
     .ob-confetti i { animation:ob-fall var(--t) var(--dl) cubic-bezier(.25,.5,.5,1) forwards; }
     .ob-say { animation:ob-say .45s .15s cubic-bezier(.2,1.4,.4,1) both; transform-origin:50% 0; }
     .ob-sub, .ob-body { animation:ob-rise .45s .3s ease-out both; }
-    .ob-bar i { background-size:200% 100%; background-image:linear-gradient(90deg,#E4B04A,#F6D58A,#E4B04A); animation:ob-shine 2.4s linear infinite; }
+    .ob-bar i { background-image:linear-gradient(90deg,#C9953B,#F3D27A); }
     .ob-burst i { animation:ob-burst .95s cubic-bezier(.15,.7,.3,1) forwards; }
     .ob-chip[aria-pressed="true"] { animation:ob-pick .35s cubic-bezier(.2,1.6,.4,1); }
 
   }
-  @keyframes ob-in { from { transform:translateX(40px); opacity:0; filter:blur(4px); } to { transform:none; opacity:1; filter:none; } }
-  @keyframes ob-back { from { transform:translateX(-40px); opacity:0; filter:blur(4px); } to { transform:none; opacity:1; filter:none; } }
+  @keyframes ob-in { from { transform:translateX(40px); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes ob-back { from { transform:translateX(-40px); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-shake { 10%,90% { transform:translateX(-2px); } 20%,80% { transform:translateX(4px); } 30%,50%,70% { transform:translateX(-7px); } 40%,60% { transform:translateX(7px); } }
   @keyframes ob-boom { 0% { transform:scale(.3); opacity:0; } 60% { transform:scale(1.15); opacity:1; } 100% { transform:scale(1); } }
   @keyframes ob-flipin { from { transform:perspective(600px) rotateX(-80deg) translateY(30px); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-spin { from { transform:rotateY(-720deg) scale(.3); } to { transform:none; } }
-  @keyframes ob-sweep { 0% { left:-60%; } 60%,100% { left:130%; } }
+  @keyframes ob-sweep { 0% { transform:translateX(0) skewX(-20deg); } 60%,100% { transform:translateX(475%) skewX(-20deg); } }
   @keyframes ob-fall { 0% { opacity:1; transform:translate(0,0) rotate(0); } 100% { opacity:1; transform:translate(var(--x), 110vh) rotate(var(--r)); } }
   @keyframes ob-say { from { transform:scale(.6); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-rise { from { transform:translateY(10px); opacity:0; } to { transform:none; opacity:1; } }
@@ -1061,7 +1066,7 @@ var WorthItOnboard = (() => {
   @keyframes pn-peek { 0% { transform:translateY(110%); } 60% { transform:translateY(-8%); } 100% { transform:none; } }
   @keyframes pn-tilt { 0% { transform:rotate(0); } 25% { transform:rotate(-14deg); } 50% { transform:rotate(10deg); } 75% { transform:rotate(-5deg); } 100% { transform:none; } }
   @keyframes pn-zoom { 0% { transform:scale(0) rotate(20deg); } 100% { transform:none; } }
-  @keyframes pn-glow { 0% { filter:brightness(.3) blur(6px); transform:scale(.9); } 60% { filter:brightness(1.6) drop-shadow(0 0 20px #F3D27A); } 100% { filter:none; transform:none; } }
+  @keyframes pn-glow { 0% { opacity:.2; transform:scale(.9); } 60% { opacity:1; transform:scale(1.06); } 100% { transform:none; } }
   @keyframes pn-rocket { 0% { transform:translateY(140%) scale(.6); } 60% { transform:translateY(-14%) scale(1.08); } 100% { transform:none; } }
   /* Every step arrives its own way */
   @media (prefers-reduced-motion:no-preference) {
@@ -1101,12 +1106,12 @@ var WorthItOnboard = (() => {
   .ob { --ez:cubic-bezier(.16,1,.3,1); }
   @keyframes ob-fade { from { opacity:0; } to { opacity:1; } }
   @keyframes ob-swing { 0% { transform:perspective(500px) rotateX(-90deg); opacity:0; } 60% { transform:perspective(500px) rotateX(18deg); opacity:1; } 100% { transform:none; } }
-  @keyframes ob-blurin { from { opacity:0; filter:blur(10px); transform:scale(1.04); } to { opacity:1; filter:none; transform:none; } }
+  @keyframes ob-blurin { from { opacity:0; transform:scale(1.04); } to { opacity:1; transform:none; } }
   @keyframes ob-up { from { transform:translateY(70px); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-down { from { transform:translateY(-50px); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-grow { from { transform:scaleX(.3); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-flipy { from { transform:perspective(400px) rotateY(90deg); opacity:0; } to { transform:none; opacity:1; } }
-  @keyframes ob-zoom { from { transform:scale(.82); opacity:0; filter:blur(6px); } to { transform:none; opacity:1; filter:none; } }
+  @keyframes ob-zoom { from { transform:scale(.82); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-fromleft { from { transform:translateX(-60px); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-fromright { from { transform:translateX(60px); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-turn { from { transform:perspective(900px) rotateY(-100deg); opacity:0; } to { transform:none; opacity:1; } }
@@ -1114,7 +1119,7 @@ var WorthItOnboard = (() => {
   @keyframes ob-drop { 0% { transform:translateY(-40px); opacity:0; } 100% { transform:none; opacity:1; } }
   @keyframes ob-deal { from { transform:translate(140px, 60px) rotate(var(--rot, -8deg)) scale(.8); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-bounceup { from { transform:translateY(60px) scale(.8); opacity:0; } to { transform:none; opacity:1; } }
-  @keyframes ob-spread { from { letter-spacing:.4em; opacity:0; filter:blur(4px); } to { letter-spacing:normal; opacity:1; filter:none; } }
+  @keyframes ob-spread { from { transform:scaleX(1.25); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-spinin { from { transform:rotate(-200deg) scale(.2); opacity:0; } to { transform:none; opacity:1; } }
   @keyframes ob-flash { 0% { opacity:0; transform:scale(.94); filter:brightness(2.2); } 60% { opacity:1; filter:brightness(1.2); } 100% { transform:none; filter:none; } }
   @keyframes ob-pop { from { transform:scale(.7); opacity:0; } to { transform:none; opacity:1; } }
@@ -1541,6 +1546,21 @@ var WorthItPanel = (() => {
   .badge .bh { display:block; font-size:10px; line-height:1.3; color:var(--faint); margin-top:3px; }
   .badge.got { border-color:var(--edge); background:linear-gradient(180deg,#2A2114,var(--raise)); }
   .badge.locked .bi { filter:grayscale(1); opacity:.35; }
+  .badge { position:relative; overflow:hidden; }
+  .badge.got .bi { display:inline-block; }
+  .badge.mystery { border-style:dashed; border-color:var(--edge); background:linear-gradient(160deg,#1E1810,#120F0B); }
+  .badge.mystery .bi { filter:none; opacity:1; width:30px; height:30px; margin:0 auto; border-radius:50%; display:grid; place-items:center; font:800 17px/1 ${FONT.display}; color:#17120A; background:radial-gradient(circle at 35% 30%,#FFF1BF,#E4B04A 60%,#9A6F1E); }
+  .badge.mystery .bn { letter-spacing:.2em; color:var(--gold); }
+  .badge.secretgot::before { content:"SECRET"; position:absolute; top:4px; right:-18px; transform:rotate(35deg); font:800 7px/1 ${FONT.mono}; letter-spacing:.1em; background:var(--gold); color:#17120A; padding:2px 18px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .badge.got .bi { animation:wi-badge-float 3.2s ease-in-out infinite; will-change:transform; }
+    .badge.got:nth-child(3n+2) .bi { animation-delay:-1.1s; } .badge.got:nth-child(3n) .bi { animation-delay:-2.2s; }
+    .badge.got::after { content:""; position:absolute; top:0; bottom:0; left:0; width:45%; background:linear-gradient(100deg,transparent,rgba(255,236,190,.16),transparent); transform:translateX(-120%) skewX(-18deg); animation:wi-badge-shine 5s ease-in-out infinite; pointer-events:none; will-change:transform; }
+    .badge.mystery .bi { animation:wi-badge-wobble 2.8s ease-in-out infinite; will-change:transform; }
+  }
+  @keyframes wi-badge-float { 0%,100% { transform:translateY(0) rotate(0); } 50% { transform:translateY(-3px) rotate(-4deg); } }
+  @keyframes wi-badge-shine { 0%,55% { transform:translateX(-120%) skewX(-18deg); } 80%,100% { transform:translateX(330%) skewX(-18deg); } }
+  @keyframes wi-badge-wobble { 0%,100% { transform:rotate(0) scale(1); } 20% { transform:rotate(-10deg) scale(1.05); } 40% { transform:rotate(8deg); } 60% { transform:rotate(0) scale(1); } }
   .lock { background:var(--raise); border:1px dashed var(--edge); border-radius:12px; padding:14px; text-align:center; }
   .lock .li { font-size:26px; }
   .lock h5 { margin:6px 0 4px; font-family:${FONT.display}; font-size:15px; font-weight:800; }
@@ -1831,7 +1851,7 @@ var WorthItPanel = (() => {
       const b = celebrate[0];
       const more = celebrate.length > 1 ? ` (+${celebrate.length - 1} more)` : "";
       return el("div", { class: "pop", role: "status" }, el("span", { class: "bi", "aria-hidden": "true" }, b.icon),
-        el("p", {}, el("b", {}, `New badge: ${b.name}!`), ` ${b.did || b.how}${more}`),
+        el("p", {}, el("b", {}, b.secret ? `Secret badge found: ${b.name}!` : `New badge: ${b.name}!`), ` ${b.did || b.how}${more}`),
         el("button", { class: "x", "aria-label": "Hide", title: "Hide", on: { click: () => { celebrate = []; render(); } } }, "×"));
     }
 
@@ -2185,13 +2205,15 @@ var WorthItPanel = (() => {
         info.streak
           ? el("span", {}, el("b", {}, `${W.plural(info.streak, "day")} in a row`), ` of learning. Best: ${W.plural(Math.max(info.best, info.streak), "day")}.`)
           : el("span", {}, el("b", {}, "Start a streak today."), " Do a lesson or think something over, then come back tomorrow.")));
-      out.push(el("p", { class: "kicker", style: "margin-top:4px" }, `Badges · ${info.earned} of ${Q.BADGES.length}`));
+      const secrets = Q.BADGES.filter((b) => b.secret && !info.q.badges[b.id]).length;
+      out.push(el("p", { class: "kicker", style: "margin-top:4px" }, `Badges · ${info.earned} of ${Q.BADGES.length}` + (secrets ? ` · ${secrets} secret` : "")));
       const grid = el("div", { class: "bgrid" });
       for (const b of Q.BADGES) {
         const got = info.q.badges[b.id];
-        grid.append(el("div", { class: "badge " + (got ? "got" : "locked"), "data-badge": b.id, title: b.how },
-          el("span", { class: "bi", "aria-hidden": "true" }, b.icon), el("span", { class: "bn" }, b.name),
-          el("span", { class: "bh" }, got ? "Earned!" : b.how)));
+        const hidden = b.secret && !got; // secret badges stay a surprise until they're earned
+        grid.append(el("div", { class: "badge " + (got ? "got" + (b.secret ? " secretgot" : "") : hidden ? "locked mystery" : "locked"), "data-badge": b.id, title: hidden ? "A secret badge. Keep exploring!" : b.how },
+          el("span", { class: "bi", "aria-hidden": "true" }, hidden ? "?" : b.icon), el("span", { class: "bn" }, hidden ? "???" : b.name),
+          el("span", { class: "bh" }, got ? (b.secret ? "Secret badge found!" : "Earned!") : hidden ? "A surprise. Keep exploring!" : b.how)));
       }
       out.push(grid);
       out.push(el("p", { class: "note" }, "Badges are for thinking and learning, never for buying. They stay on this computer."));
@@ -3142,6 +3164,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
       var d = dev.getBoundingClientRect(), W2 = d.width, H2 = d.height;
       var showIt = !!(el && el.getClientRects().length);
       tour.mask.style.opacity = showIt ? "1" : "0"; tour.card.style.opacity = showIt ? "1" : "0"; tour.card.style.pointerEvents = showIt ? "auto" : "none";
+      var key = showIt ? (function () { var q = el.getBoundingClientRect(); return [Math.round(q.left), Math.round(q.top), Math.round(q.width), Math.round(q.height), Math.round(W2), Math.round(H2), tour.i].join(","); })() : "none" + tour.i;
+      if (key === tour.key) { tour.raf = requestAnimationFrame(loop); return; }
+      tour.key = key;
       if (showIt) {
         tour.target = el;
         var r = el.getBoundingClientRect(), pad = 6;
