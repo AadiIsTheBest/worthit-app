@@ -71,6 +71,9 @@
   .rank .rb { width: 170px; height: 3px; border-radius: 99px; background: rgba(228,176,74,.14); overflow: hidden; }
   .rank .rb i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold-lo), var(--gold-hi)); border-radius: 99px; }
   .rank .rn { font-size: 11.5px; color: var(--faint); letter-spacing: .02em; }
+  .planchip { margin: 12px 0 0; border: 1px solid var(--line2); background: rgba(228,176,74,.06); color: var(--gold-hi); border-radius: 999px; padding: 6px 14px; font: 600 12px var(--display); cursor: pointer; }
+  .planchip.paid { color: #17120A; background: linear-gradient(180deg, #F5D686, var(--gold)); border: 0; }
+  .planchip.ended { color: var(--mute); }
   .tagline { margin: 16px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--mute); max-width: 30ch; }
   .choices { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 310px; }
   .pill { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; border-radius: 999px; padding: 14px 22px; cursor: pointer; transition: transform .3s var(--ease), box-shadow .3s, border-color .3s, filter .3s; }
@@ -190,6 +193,7 @@
   .agree { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: var(--mute); line-height: 1.5; cursor: pointer; }
   .agree input { margin-top: 3px; accent-color: #E4B04A; width: 16px; height: 16px; flex: 0 0 auto; }
   .agree a { color: var(--gold-hi); }
+  .secret { -webkit-text-security: disc; text-security: disc; }
   .err { margin: 0; min-height: 16px; color: #E9A38F; font-size: 12.5px; font-weight: 600; }
   .shake { animation: shake .45s cubic-bezier(.36,.07,.19,.97); }
   @keyframes shake { 20%, 80% { transform: translateX(-3px); } 40%, 60% { transform: translateX(6px); } 50% { transform: translateX(-6px); } }
@@ -580,29 +584,37 @@ var WorthItQuest = (() => {
   return { BADGES, QUEST, status, record, badge, today };
 })();
 
-// WorthIt family plan: a free first week, then the family plan unlocks the full version.
+// WorthIt family plan: a free first week, then a free plan or the family plan.
 //
-// PAYMENTS_ENABLED stays false until the WorthIt team has a payment provider set up
-// (see the README). While it is false, everything is free and nothing is ever locked.
+// Payments run through ExtensionPay (extensionpay.com), which uses Stripe. WorthIt never sees a card.
+// To switch payments on, register WorthIt on extensionpay.com, create two plans with the nicknames
+// "monthly" (S$4) and "yearly" (S$40), and paste the ExtensionPay extension id below.
+// While EXTPAY_ID is empty, payments are off and everything is free.
 //
-// The free week needs no sign-up and no card: the install date is saved on this computer,
-// and nothing is charged automatically when the week ends. A parent chooses to subscribe.
+// The free week needs no card: it starts on this computer when a grown-up taps "Start my free week".
+// Nothing is charged when it ends. A grown-up chooses to subscribe.
 
 var WorthItPlan = (() => {
+  const EXTPAY_ID = ""; // e.g. "worthit"
   const PAYMENTS_ENABLED = true; // the web app shows the free week and the family plan
   const TRIAL_DAYS = 7;
-  const PRICE_LABEL = "S$4 a month";
+  const PRICE_LABEL = "S$4 a month or S$40 a year";
+  const PLANS = [
+    { id: "monthly", name: "Monthly", price: "S$4", per: "/month", note: "Cancel any time" },
+    { id: "yearly", name: "Yearly", price: "S$40", per: "/year", note: "S$3.33 a month", best: "Save 17%" },
+  ];
   const FREE_LESSONS = 3; // lessons 1-3 stay free for everyone, always
+  const FREE_SCANS_PER_DAY = 3; // on the free plan, WorthIt checks 3 different products a day
 
-  // What stays free after the free week: prices in days, the wish list, Learn, lessons 1-3, badges and the quest.
-  // What the family plan unlocks: Better buy with the AI and Save the Planet, and lessons 4-8.
+  // Free after the free week: prices in days (3 products a day), the wish list, Learn, lessons 1-3, badges and the quest.
+  // The family plan unlocks: unlimited price checks, Better buy and Save the Planet, and lessons 4-8.
   const PREMIUM = ["better", "lessonsAll"];
 
   function state(raw, now) {
     const t = now || Date.now();
-    const installedAt = Number(raw && raw.installedAt) || t;
+    const start = Number(raw && (raw.trialStartedAt || raw.installedAt)) || t;
     const paid = !!(raw && raw.planActive);
-    const daysLeft = Math.max(0, Math.ceil(TRIAL_DAYS - (t - installedAt) / 864e5));
+    const daysLeft = Math.max(0, Math.ceil(TRIAL_DAYS - (t - start) / 864e5));
     if (!PAYMENTS_ENABLED) return { mode: "free", locked: false, daysLeft, paid };
     if (paid) return { mode: "paid", locked: false, daysLeft, paid };
     if (daysLeft > 0) return { mode: "trial", locked: false, daysLeft, paid };
@@ -613,8 +625,25 @@ var WorthItPlan = (() => {
     return !st.locked || !PREMIUM.includes(feature);
   }
 
-  return { PAYMENTS_ENABLED, TRIAL_DAYS, PRICE_LABEL, FREE_LESSONS, PREMIUM, state, allows };
+  function day(now) {
+    const d = new Date(now || Date.now());
+    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+  }
+
+  // Price checks on the free plan: the same product can be looked at again; a 4th new product waits for tomorrow.
+  function scan(st, saved, key, now) {
+    if (!st || st.mode !== "ended" || !key) return { limited: false, allowed: true, left: null, next: null };
+    const today = day(now);
+    const s = saved && saved.day === today && Array.isArray(saved.keys) ? saved : { day: today, keys: [] };
+    if (s.keys.includes(key)) return { limited: true, allowed: true, left: Math.max(0, FREE_SCANS_PER_DAY - s.keys.length), next: null };
+    if (s.keys.length >= FREE_SCANS_PER_DAY) return { limited: true, allowed: false, left: 0, next: null };
+    const next = { day: today, keys: [...s.keys, key] };
+    return { limited: true, allowed: true, left: FREE_SCANS_PER_DAY - next.keys.length, next };
+  }
+
+  return { EXTPAY_ID, PAYMENTS_ENABLED, TRIAL_DAYS, PRICE_LABEL, PLANS, FREE_LESSONS, FREE_SCANS_PER_DAY, PREMIUM, state, allows, scan };
 })();
+if (typeof globalThis !== "undefined") globalThis.WorthItPlan = WorthItPlan;
 
 // Penny: WorthIt's guide. A friendly coin who walks kids and parents through setup and answers common questions.
 // Every answer is written by the WorthIt team. Penny is not an AI chatbot: there is no typing box,
@@ -1329,6 +1358,7 @@ var WorthItPanel = (() => {
   .tab .ct { font-family:${FONT.mono}; font-size:10px; background:var(--gold); color:#17120A; border-radius:99px; padding:1px 6px; font-weight:700; }
 
   .body { padding:14px; overflow-y:auto; flex:1 1 auto; min-height:0; overscroll-behavior:contain; }
+  .freenote { margin:0 0 10px; font-size:11.5px; color:var(--gold); background:rgba(228,176,74,.08); border:1px solid var(--edge); border-radius:99px; padding:5px 10px; text-align:center; }
   .foot { flex:0 0 auto; border-top:1px solid var(--line); padding:8px 14px; font-size:11.5px; color:var(--faint); display:flex; gap:8px; align-items:center; }
   .foot a { color:var(--gold); font-weight:700; text-decoration:none; cursor:pointer; margin-left:auto; }
 
@@ -1690,10 +1720,10 @@ var WorthItPanel = (() => {
     const now = () => (opts.now ? opts.now() : Date.now());
 
     async function load() {
-      const raw = await store.get([...W.SETTINGS_KEYS, "wishlist", "lessonsDone", "quest", "installedAt", "planActive"]);
+      const raw = await store.get([...W.SETTINGS_KEYS, "wishlist", "lessonsDone", "quest", "installedAt", "trialStartedAt", "planActive", "scans"]);
       const done = Array.isArray(raw.lessonsDone) ? raw.lessonsDone.filter((id) => LESSONS.some((l) => l.id === id)) : [];
       const plan = typeof WorthItPlan !== "undefined" ? WorthItPlan.state(raw, now()) : { mode: "free", locked: false };
-      return { s: W.withDefaults(raw), wishlist: Array.isArray(raw.wishlist) ? raw.wishlist : [], done, quest: raw.quest, plan };
+      return { s: W.withDefaults(raw), wishlist: Array.isArray(raw.wishlist) ? raw.wishlist : [], done, quest: raw.quest, plan, scans: raw.scans };
     }
 
     function allows(st, feature) {
@@ -1772,6 +1802,15 @@ var WorthItPanel = (() => {
         el("h5", {}, `${what} is in the family plan`),
         el("p", {}, `Your free ${P.TRIAL_DAYS}-day week is over. Ask a grown-up to unlock the family plan. Prices in days, your wish list, Learn and your badges stay free.`),
         openSettings ? el("button", { class: "golink", style: "margin-top:10px", on: { click: () => openSettings() } }, "Show a grown-up") : null);
+    }
+
+    function scanLimit() {
+      const P = typeof WorthItPlan !== "undefined" ? WorthItPlan : { FREE_SCANS_PER_DAY: 3 };
+      return [el("div", { class: "lock", "data-locked": "scans" }, el("div", { class: "li", "aria-hidden": "true" }, "⏳"),
+        el("h5", {}, `That's your ${P.FREE_SCANS_PER_DAY} price checks for today`),
+        el("p", {}, `The free plan checks ${P.FREE_SCANS_PER_DAY} different things a day. Come back tomorrow, or ask a grown-up about the family plan for unlimited checks. Things you already checked today still work.`),
+        openSettings ? el("button", { class: "golink", style: "margin-top:10px", on: { click: () => openSettings() } }, "Show a grown-up") : null,
+        el("button", { class: "golink", style: "margin-top:6px", on: { click: () => { area = "me"; tab = "wish"; render(); } } }, "Go to my wish list & lessons →"))];
     }
 
     function lessonBox() {
@@ -2150,8 +2189,12 @@ var WorthItPanel = (() => {
       if (seq !== renderSeq || destroyed) return;
       if (!product && (tab === "cost" || tab === "better" || tab === "learn")) { area = "me"; tab = "wish"; }
       const pk = product ? (page && page.key) || product.name : null;
-      if (pk && tab === "cost" && lookedAt !== pk) { lookedAt = pk; earn(["firstLook"]); }
-      if (pk && tab === "learn" && learnedAt !== pk) { learnedAt = pk; earn(["curious", "learned"]); }
+      // Free plan: 3 different price checks a day. Looking again at one already checked is fine.
+      const sc = pk && pageLike && typeof WorthItPlan !== "undefined" && WorthItPlan.scan ? WorthItPlan.scan(st.plan, st.scans, pk, now()) : { limited: false, allowed: true };
+      if (sc.next) store.set({ scans: sc.next });
+      const blocked = !sc.allowed && area === "item";
+      if (!blocked && pk && tab === "cost" && lookedAt !== pk) { lookedAt = pk; earn(["firstLook"]); }
+      if (!blocked && pk && tab === "learn" && learnedAt !== pk) { learnedAt = pk; earn(["curious", "learned"]); }
       const old = wrap.querySelector(".body");
       const keepScroll = old && old.dataset.panel === tab ? old.scrollTop : 0;
       const body = el("div", { class: "body", "data-panel": tab });
@@ -2159,8 +2202,9 @@ var WorthItPanel = (() => {
       if (bp) body.append(bp);
       const lb = lessonBox();
       if (lb) body.append(lb);
-      const parts = tab === "cost" ? panelCost(st) : tab === "better" ? panelBetter(st) : tab === "learn" ? panelLearn(st) : tab === "lessons" ? panelLessons(st) : tab === "badges" ? panelBadges(st) : panelWish(st);
+      const parts = blocked ? scanLimit() : tab === "cost" ? panelCost(st) : tab === "better" ? panelBetter(st) : tab === "learn" ? panelLearn(st) : tab === "lessons" ? panelLessons(st) : tab === "badges" ? panelBadges(st) : panelWish(st);
       body.append(...parts);
+      if (sc.limited && !blocked && area === "item") body.prepend(el("p", { class: "freenote" }, `Free plan: ${W.plural(sc.left, "price check")} left today`));
       const bootEl = wrap.querySelector(".boot"); // keep the start-up screen on top while it plays
       helpCtx = { name: st.s.name || "" };
       wrap.replaceChildren(...[header(), switchBar(st), tabsBar(st), body, footer(), helpButton()].filter(Boolean));
@@ -2462,8 +2506,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
 
   // ---------- storage: this browser only (like chrome.storage.local in the extension) ----------
   // Demo: everything lives only as long as this tab. Close the tab and the demo starts again from the very beginning.
-  try { localStorage.removeItem(KEY); } catch (e) { /* older demo data */ }
-  function box() { try { sessionStorage.setItem(KEY + "-t", "1"); sessionStorage.removeItem(KEY + "-t"); return sessionStorage; } catch (e) { return null; } }
+  // Demo: nothing is written to the browser at all. Close or refresh the tab and it starts again from the very beginning.
+  try { localStorage.removeItem(KEY); sessionStorage.removeItem(KEY); } catch (e) { /* older demo data */ }
+  function box() { return null; }
   var BOX = box();
   var mem = {};
   try { mem = JSON.parse((BOX && BOX.getItem(KEY)) || "{}") || {}; } catch (e) { mem = {}; }
@@ -2579,10 +2624,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     tSign.addEventListener("click", function () { if (mode === "login") auth("signup"); });
     tLog.addEventListener("click", function () { if (mode !== "login") auth("login"); });
     tabs.append(tSign, tLog);
-    var f = h("form", "form authf");
-    var em = h("input", "in"); em.type = "email"; em.placeholder = "Parent's email"; em.autocomplete = "email"; em.setAttribute("aria-label", "Parent's email");
+    var f = h("form", "form authf"); f.autocomplete = "off";
+    var em = h("input", "in"); em.type = "email"; em.placeholder = "Parent's email"; em.autocomplete = "off"; em.name = "wi-demo-email"; em.spellcheck = false; em.setAttribute("aria-label", "Parent's email");
     if (mem.account && mem.account.email) em.value = mem.account.email;
-    var pw = h("input", "in"); pw.type = "password"; pw.placeholder = mode === "login" ? "Password" : "Create a password (8+ characters)"; pw.autocomplete = mode === "login" ? "current-password" : "new-password"; pw.setAttribute("aria-label", "Password");
+    var pw = h("input", "in"); pw.type = "text"; pw.className = "in secret"; pw.placeholder = mode === "login" ? "Password" : "Create a password (8+ characters)"; pw.autocomplete = "off"; pw.name = "wi-demo-secret"; pw.spellcheck = false; pw.setAttribute("aria-label", "Password");
     var agree = null;
     if (mode !== "login") {
       agree = h("label", "agree");
@@ -2627,7 +2672,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var pb = pennyBox("wave");
     var t = html("h3", "ptitle", 'Your <span class="gold-text">free week</span> starts today');
     var tl = h("div", "tline");
-    [["Today", "Everything unlocked. No card needed."], ["Day 5", "We remind you before the free week ends."], ["Day 7", "Choose the family plan, or keep the free features."]].forEach(function (r, k) {
+    [["Today", "Everything unlocked. No card needed."], ["Day 5", "WorthIt reminds you the free week is ending."], ["Day 7", "Choose the family plan, or keep the free plan."]].forEach(function (r, k) {
       var row = h("div", "trow"); row.append(h("i"), html("div", null, "<b>" + r[0] + "</b><span>" + r[1] + "</span>")); row.style.animationDelay = (0.35 + k * 0.12) + "s"; tl.append(row);
     });
     var cards = h("div", "plans");
@@ -2641,10 +2686,10 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     }
     cards.append(card("month", "Monthly", "S$4", "/month", "Cancel any time"), card("year", "Yearly", "S$40", "/year", "S$3.33 a month", "Save 17%"));
     var go = h("button", "btn", "Start my free week"); go.type = "button";
-    go.addEventListener("click", function () { wipeFrom(go); store.set({ planChosen: chosen, installedAt: Date.now() }); setup(); });
+    go.addEventListener("click", function () { wipeFrom(go); store.set({ planChosen: chosen, installedAt: Date.now(), trialStartedAt: Date.now() }); setup(); });
     var pay = h("button", "link center", "Subscribe now instead"); pay.type = "button";
     pay.addEventListener("click", function () { checkout(chosen, function () { wipeFrom(go); setup(); }); });
-    var fine = h("p", "fine", "After the free week, prices in days, the wish list, Learn, lessons 1–3 and badges stay free. The family plan unlocks Better buy, Save the Planet and all 8 lessons. Only a grown-up can subscribe.");
+    var fine = h("p", "fine", "After the free week, the free plan keeps prices in days for 3 things a day, the wish list, Learn, lessons 1\u20133 and badges. The family plan adds unlimited price checks, Better buy, Save the Planet and all 8 lessons. Only a grown-up can subscribe.");
     body.append(pb, t, tl, cards, go, pay, fine);
     stagger([t, cards, go, pay, fine], 0.2, 0.08);
     s.append(body);
@@ -2709,8 +2754,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var l1 = h("button", "link"); l1.type = "button"; l1.innerHTML = ICON.tour; l1.append("Take the tour"); l1.addEventListener("click", startTour);
     var l2 = h("button", "link"); l2.type = "button"; l2.innerHTML = ICON.gear; l2.append("Parent settings"); l2.addEventListener("click", settings);
     mini.append(l1, l2);
-    body.append(mk, t, hi, rank, tag, choices, mini);
-    stagger([t, hi, rank, tag, a1, a2, mini], 0.2, 0.07);
+    var pst = WorthItPlan.state(mem, Date.now());
+    var ps = h("button", "planchip " + pst.mode); ps.type = "button"; ps.dataset.hint = "Your plan. Tap to see it in Parent settings.";
+    ps.textContent = pst.mode === "paid" ? "\u2726 Family plan" : pst.mode === "trial" ? (pst.daysLeft <= 2 ? "Free week ends in " + W.plural(pst.daysLeft, "day") + " \u00b7 ask a grown-up" : "Free week \u00b7 " + W.plural(pst.daysLeft, "day") + " left") : "Free plan \u00b7 3 price checks a day";
+    ps.addEventListener("click", settings);
+    body.append(mk, t, hi, rank, ps, tag, choices, mini);
+    stagger([t, hi, rank, ps, tag, a1, a2, mini], 0.2, 0.07);
     s.append(body);
     helpBtn(s, "kid");
   }
@@ -2914,6 +2963,18 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var lo = h("button", "btn ghost", "Log out"); lo.type = "button";
     lo.addEventListener("click", function () { store.set({ loggedIn: false }); auth("login"); });
     acts4.append(lo); c4.append(acts4);
+    // Presenter tools: show the free week, the reminder and the free plan without waiting a week.
+    var c5 = h("div", "card");
+    c5.append(h("h2", null, "Demo: time machine"), h("p", null, "For presenting. Jump to a day of the free week to show the reminder and the free plan (3 price checks a day)."));
+    var seg = h("div", "seg tm");
+    var cur = Math.floor((Date.now() - (mem.trialStartedAt || Date.now())) / 864e5) + 1;
+    [[1, "Day 1"], [6, "Day 6"], [8, "Day 8"]].forEach(function (d) {
+      var b = h("button", null, d[1]); b.type = "button";
+      b.setAttribute("aria-pressed", String(cur === d[0] || (d[0] === 8 && cur >= 8)));
+      b.addEventListener("click", function () { store.set({ trialStartedAt: Date.now() - (d[0] - 1) * 864e5 - 60000, planActive: false, scans: null }); settings(); });
+      seg.append(b);
+    });
+    c5.append(seg);
     var c3 = h("div", "card");
     var replay = h("button", "btn ghost", "Run Penny's setup again with your child"); replay.type = "button";
     replay.addEventListener("click", function () { store.set({ onboarded: false }); setup(); });
@@ -2926,7 +2987,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var g3 = h("div", "fields"); g3.append(replay, wipe); c3.append(g3);
     var fine = html("p", "fine", "Everything stays in this browser. No account, no ads, no tracking.<br><a href=\"https://aadiisthebest.github.io/worthit-app/privacy.html\" target=\"_blank\" rel=\"noopener\">Privacy</a> · <a href=\"https://aadiisthebest.github.io/worthit-app/terms.html\" target=\"_blank\" rel=\"noopener\">Terms</a> · © 2026 the WorthIt team");
     var sv = h("div", "fields"); sv.style.marginBottom = "12px"; sv.append(save, ok);
-    body.append(c, c2, sv, c4, c3, fine);
+    body.append(c, c2, sv, c4, c5, c3, fine);
     s.append(body);
     var FIELD = { amount: fAmt, name: fName, waitDays: fWait };
     helpBtn(s, "parent", function (a) {
