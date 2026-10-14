@@ -2461,7 +2461,9 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   (function () { var st = document.createElement("style"); st.textContent = WorthItPenny.HELP_CSS; document.head.append(st); })();
 
   // ---------- storage: this browser only (like chrome.storage.local in the extension) ----------
-  function box() { try { localStorage.setItem(KEY + "-t", "1"); localStorage.removeItem(KEY + "-t"); return localStorage; } catch (e) { try { return sessionStorage; } catch (e2) { return null; } } }
+  // Demo: everything lives only as long as this tab. Close the tab and the demo starts again from the very beginning.
+  try { localStorage.removeItem(KEY); } catch (e) { /* older demo data */ }
+  function box() { try { sessionStorage.setItem(KEY + "-t", "1"); sessionStorage.removeItem(KEY + "-t"); return sessionStorage; } catch (e) { return null; } }
   var BOX = box();
   var mem = {};
   try { mem = JSON.parse((BOX && BOX.getItem(KEY)) || "{}") || {}; } catch (e) { mem = {}; }
