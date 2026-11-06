@@ -629,19 +629,13 @@ var WorthItQuest = (() => {
   return { BADGES, QUEST, status, record, badge, today };
 })();
 
-// WorthIt family plan: a free first week, then a free plan or the family plan.
-//
-// Payments run through ExtensionPay (extensionpay.com), which uses Stripe. WorthIt never sees a card.
-// To switch payments on, register WorthIt on extensionpay.com, create two plans with the nicknames
-// "monthly" (S$4) and "yearly" (S$40), and paste the ExtensionPay extension id below.
-// While EXTPAY_ID is empty, payments are off and everything is free.
-//
-// The free week needs no card: it starts on this computer when a grown-up taps "Start my free week".
-// Nothing is charged when it ends. A grown-up chooses to subscribe.
+// WorthIt plan settings. WorthIt is free: there are no payments, no accounts and nothing is ever charged.
+// The free-plan limits below only apply if paid plans are added in a future version (PAYMENTS_ENABLED stays false).
 
 var WorthItPlan = (() => {
-  const EXTPAY_ID = ""; // e.g. "worthit"
-  const PAYMENTS_ENABLED = true; // the web app shows the free week and the family plan
+  // Your Google Sheet's web-app address (see the WorthIt Data Sheet setup). Empty: nothing is ever sent.
+  const USAGE_URL = ""; // the demo never sends anything
+  const PAYMENTS_ENABLED = false; // WorthIt is free: everything is unlocked
   const TRIAL_DAYS = 7;
   const PRICE_LABEL = "S$4 a month or S$40 a year";
   const PLANS = [
@@ -686,7 +680,7 @@ var WorthItPlan = (() => {
     return { limited: true, allowed: true, left: FREE_SCANS_PER_DAY - next.keys.length, next };
   }
 
-  return { EXTPAY_ID, PAYMENTS_ENABLED, TRIAL_DAYS, PRICE_LABEL, PLANS, FREE_LESSONS, FREE_SCANS_PER_DAY, PREMIUM, state, allows, scan };
+  return { USAGE_URL, EXTPAY_ID: "", PAYMENTS_ENABLED, TRIAL_DAYS, PRICE_LABEL, PLANS, FREE_LESSONS, FREE_SCANS_PER_DAY, PREMIUM, state, allows, scan };
 })();
 if (typeof globalThis !== "undefined") globalThis.WorthItPlan = WorthItPlan;
 
@@ -833,7 +827,7 @@ var WorthItPenny = (() => {
   function priceAnswer() {
     const P = typeof WorthItPlan !== "undefined" ? WorthItPlan : null;
     if (P && P.PAYMENTS_ENABLED) return [`The first ${P.TRIAL_DAYS} days are free, with no card needed. After that, prices in days, the wish list, Learn and the first lessons stay free, and the family plan (${P.PRICE_LABEL}) unlocks Better buy, Save the Planet and all the lessons.`, "Nothing is ever charged automatically when the free week ends."];
-    return ["WorthIt is free during the beta. A family plan is planned later; you'll always see the price before paying, and nothing is charged automatically."];
+    return ["WorthIt is free. There are no payments, no accounts and no ads, and nothing is ever charged."];
   }
 
   function mount(container, opts = {}) {
@@ -1158,10 +1152,10 @@ var WorthItOnboard = (() => {
       const st = document.createElement("style"); st.dataset.onboard = "1"; st.textContent = CSS + (WorthItPenny.HELP_CSS || "");
       styleHost.appendChild(st);
     }
-    const a = { name: "", age: "", goalName: "", goalAmount: 0, amount: 0, period: "week", currency: "SGD", waitDays: 3, promised: false };
+    const a = { name: "", age: "", goalName: "", goalAmount: 0, amount: 0, period: "week", currency: "SGD", waitDays: 3, promised: false, share: null };
     const P = typeof WorthItPlan !== "undefined" ? WorthItPlan : null;
     const skipSteps = opts.skipSteps || [];
-    const steps = ["hello", "name", "age", "goal", "handoff", "allowance", "wait", "handback", "aha", "promise", ...(P && P.PAYMENTS_ENABLED ? ["week"] : []), "pin", "done"].filter((x) => !skipSteps.includes(x));
+    const steps = ["hello", "name", "age", "goal", "handoff", "allowance", "wait", "share", "handback", "aha", "promise", ...(P && P.PAYMENTS_ENABLED ? ["week"] : []), "pin", "done"].filter((x) => !skipSteps.includes(x));
     let shown = 0;
     let i = 0;
     let holdTimer = null;
@@ -1205,7 +1199,8 @@ var WorthItOnboard = (() => {
 
     async function finish() {
       const s = { name: a.name.trim(), age: a.age, goalName: a.goalName.trim(), goalAmount: a.goalName.trim() ? Number(a.goalAmount) || 0 : 0, goalSaved: 0,
-        amount: Number(a.amount) || 0, period: a.period, currency: a.currency, waitDays: a.waitDays, onboarded: true, pennySeen: true };
+        amount: Number(a.amount) || 0, period: a.period, currency: a.currency, waitDays: a.waitDays, onboarded: true, pennySeen: true,
+        shareUsage: a.share === true, consentAt: Date.now(), consentVersion: 1 };
       await store.set(s);
       if (typeof WorthItQuest !== "undefined") await WorthItQuest.record(store, a.promised ? ["promise"] : [], { now: opts.now });
       if (opts.onDone) opts.onDone(s);
@@ -1252,6 +1247,16 @@ var WorthItOnboard = (() => {
         for (const [d, t, sub] of opts2) box.append(h("button", { class: "ob-card", type: "button", "aria-pressed": String(a.waitDays === d), on: { click: (e) => { a.waitDays = d; box.querySelectorAll(".ob-card").forEach((c) => c.setAttribute("aria-pressed", String(c === e.currentTarget))); e.currentTarget.classList.add("chosen"); setTimeout(next, 420); } } },
           h("div", {}, h("b", {}, t), h("span", {}, sub)), d === sg.wait ? h("span", { class: "tag" }, "Suggested") : null));
         frame("Grown-up", "think", [say("How long should wish-list items <b>wait</b> before deciding?"), h("p", { class: "ob-sub" }, "Tap one. Waiting helps children tell a want from a need. You can change it later.")], null);
+        el.querySelector(".ob-stage").append(box);
+      } else if (step === "share") {
+        // A parent's choice, asked once. Off unless they say yes. Changeable any time in Parent settings.
+        const box = h("div", { class: "ob-body", role: "group", "aria-label": "Share anonymous usage" });
+        const pick = (v, e) => { a.share = v; box.querySelectorAll(".ob-card").forEach((c) => c.setAttribute("aria-pressed", String(c === e.currentTarget))); e.currentTarget.classList.add("chosen"); setTimeout(next, 420); };
+        box.append(
+          h("button", { class: "ob-card", type: "button", "aria-pressed": String(a.share === true), on: { click: (e) => pick(true, e) } }, h("div", {}, h("b", {}, "Yes, share anonymous counts"), h("span", {}, "Helps us improve lessons and features"))),
+          h("button", { class: "ob-card", type: "button", "aria-pressed": String(a.share === false), on: { click: (e) => pick(false, e) } }, h("div", {}, h("b", {}, "No thanks"), h("span", {}, "WorthIt works exactly the same"))));
+        frame("Grown-up", "happy", [say("Last grown-up question: <b>help make WorthIt better?</b>"),
+          h("p", { class: "ob-sub" }, "If you agree, WorthIt sends anonymous counts once a day, like how many lessons are finished and which features are used. Never your child's name, age, the websites they visit or your email. Change it any time in Parent settings.")], null);
         el.querySelector(".ob-stage").append(box);
       } else if (step === "handback") {
         frame(null, "wave", [say(`Thanks! Now pass it back to <b>${esc(nm())}</b>.`)], goBtn(a.name ? `I'm ${a.name}!` : "I'm back!", next));
@@ -1798,6 +1803,22 @@ var WorthItPanel = (() => {
     let celebrate = []; // badges just earned, shown once at the top
     let lookedAt = null; // product key already counted for First Look / Curious Mind
     let learnedAt = null;
+    let betterAt = null, blockedAt = null;
+    // Feature counts kept on this computer. Sent once a day, anonymously, only if a parent said yes (see background.js).
+    const usagePending = {};
+    let usageTimer = 0;
+    function bump(...keys) {
+      for (const k of keys) usagePending[k] = (usagePending[k] || 0) + 1;
+      clearTimeout(usageTimer);
+      usageTimer = setTimeout(async () => {
+        const add = Object.assign({}, usagePending);
+        for (const k of Object.keys(usagePending)) delete usagePending[k];
+        const cur = ((await store.get(["usage"])).usage) || {};
+        for (const [k, n] of Object.entries(add)) cur[k] = (cur[k] || 0) + n;
+        await store.set({ usage: cur });
+      }, 900);
+    }
+    const EVENT_COUNT = { firstLook: "priceChecks", curious: "learnOpens", thinker: "wishSaves", bargain: "cheaperClicks", planetPal: "secondhandClicks", patient: "waitedOut", changedMind: "changedMind" };
     let destroyed = false;
     const aiState = new Map(); // product key -> { status: "loading" | "ok" | "off" | "unavailable" | "error", data, example }
 
@@ -1831,7 +1852,10 @@ var WorthItPanel = (() => {
 
     // Badges: record what the child did; celebrate any badge that is new.
     async function earn(events, extra) {
-      if (typeof WorthItQuest === "undefined" || destroyed) return;
+      if (destroyed) return;
+      const counted = events.map((e) => EVENT_COUNT[e]).filter(Boolean);
+      if (counted.length) bump(...counted);
+      if (typeof WorthItQuest === "undefined") return;
       const fresh = await WorthItQuest.record(store, events, Object.assign({ now }, extra || {}));
       if (fresh.length) { celebrate = fresh; render(); }
     }
@@ -2168,6 +2192,7 @@ var WorthItPanel = (() => {
           if (j === L.a && !done.includes(L.id)) {
             if (levelFor(n + 1) !== levelFor(n)) levelUp = levelFor(n + 1);
             await store.set({ lessonsDone: [...done, L.id] });
+            bump("lessonsDone");
             render();
             earn(["learned"], { lessonsDone: done.length + 1 });
             return;
@@ -2284,6 +2309,7 @@ var WorthItPanel = (() => {
     function closeHelp() { if (helpOv) { helpOv.remove(); helpOv = null; } }
     function openHelp() {
       if (helpOv || typeof WorthItPenny === "undefined") return;
+      bump("pennyHelp");
       helpOv = el("div", { class: "pnov" });
       wrap.append(helpOv);
       WorthItPenny.mount(helpOv, {
@@ -2307,6 +2333,8 @@ var WorthItPanel = (() => {
       const blocked = !sc.allowed && area === "item";
       if (!blocked && pk && tab === "cost" && lookedAt !== pk) { lookedAt = pk; earn(["firstLook"]); }
       if (!blocked && pk && tab === "learn" && learnedAt !== pk) { learnedAt = pk; earn(["curious", "learned"]); }
+      if (!blocked && pk && tab === "better" && betterAt !== pk) { betterAt = pk; bump("betterOpens"); }
+      if (blocked && blockedAt !== pk) { blockedAt = pk; bump("limitHits"); }
       const old = wrap.querySelector(".body");
       const keepScroll = old && old.dataset.panel === tab ? old.scrollTop : 0;
       const body = el("div", { class: "body", "data-panel": tab });
@@ -2722,119 +2750,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     L.classList.add("closing"); L._shade.classList.add("closing"); setTimeout(bye, 350);
   }
 
-  // ---------- 0. a family account (demo: only the email is kept, in this browser) ----------
-  function auth(mode) {
-    var s = screen("auth");
-    railSync(mode === "login" ? "login" : "signup");
-    s.append(h("div", "sky"));
-    var body = h("div", "body");
-    var mk = h("img", "mark sm"); mk.src = MARK_BIG; mk.alt = "";
-    var t = html("h2", null, 'Worth<span class="gold-text">It</span>');
-    var sub = h("p", "tagline", "Money lessons for kids, right where they shop. A grown-up creates the family account.");
-    var tabs = h("div", "seg");
-    var tSign = h("button", null, "Sign up"), tLog = h("button", null, "Log in");
-    [tSign, tLog].forEach(function (b) { b.type = "button"; });
-    tSign.setAttribute("aria-pressed", String(mode !== "login")); tLog.setAttribute("aria-pressed", String(mode === "login"));
-    tSign.addEventListener("click", function () { if (mode === "login") auth("signup"); });
-    tLog.addEventListener("click", function () { if (mode !== "login") auth("login"); });
-    tabs.append(tSign, tLog);
-    var f = h("form", "form authf"); f.autocomplete = "off";
-    var em = h("input", "in"); em.type = "email"; em.placeholder = "Parent's email"; em.autocomplete = "off"; em.name = "wi-demo-email"; em.spellcheck = false; em.setAttribute("aria-label", "Parent's email");
-    if (mem.account && mem.account.email) em.value = mem.account.email;
-    var pw = h("input", "in"); pw.type = "text"; pw.className = "in secret"; pw.placeholder = mode === "login" ? "Password" : "Create a password (8+ characters)"; pw.autocomplete = "off"; pw.name = "wi-demo-secret"; pw.spellcheck = false; pw.setAttribute("aria-label", "Password");
-    var agree = null;
-    if (mode !== "login") {
-      agree = h("label", "agree");
-      var cb = h("input"); cb.type = "checkbox"; agree.append(cb);
-      agree.append(html("span", null, 'I’m a parent or guardian (18+) and agree to the <a href="https://aadiisthebest.github.io/worthit-app/terms.html" target="_blank" rel="noopener">Terms</a> and <a href="https://aadiisthebest.github.io/worthit-app/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.'));
-    }
-    var err = h("p", "err");
-    var go = h("button", "btn", mode === "login" ? "Log in" : "Create family account"); go.type = "submit";
-    f.append(em, pw); if (agree) f.append(agree); f.append(err, go);
-    f.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var email = em.value.trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = "Please enter a real email address."; em.focus(); return shake(f); }
-      if (pw.value.length < 8) { err.textContent = "Passwords need at least 8 characters."; pw.focus(); return shake(f); }
-      if (agree && !agree.querySelector("input").checked) { err.textContent = "Please confirm you're a parent or guardian."; return shake(f); }
-      err.textContent = "";
-      go.disabled = true; go.textContent = mode === "login" ? "Logging in…" : "Creating your account…";
-      // Demo: the password is never stored or sent. Only the email is kept, in this browser.
-      setTimeout(function () {
-        wipeFrom(go);
-        var known = mem.account && mem.account.email === email && mem.onboardedFor === email;
-        if (mode !== "login" || !known) {
-          // a new family (or a new email on this browser): Penny's questions and the tour run again
-          store.set({ onboarded: false, onboardedFor: null, toured: false, planChosen: mode !== "login" ? null : mem.planChosen });
-        }
-        store.set({ account: { email: email, since: Date.now() }, loggedIn: true });
-        if (!mem.trialStartedAt) store.set({ trialStartedAt: Date.now(), installedAt: Date.now() });
-        if (known && mode === "login") home(); else setup();
-      }, REDUCE ? 50 : 700);
-    });
-    var demo = html("p", "realnote", mode === "login"
-      ? "<b>In the real WorthIt:</b> you only log in on a new computer. ExtensionPay emails a one-time code, and your plan and free week come back by themselves. Demo: nothing is saved or sent."
-      : "<b>In the real WorthIt:</b> the parent makes the account once on ExtensionPay's secure page (email + a one-time code) and stays logged in on that computer. Demo: nothing is saved or sent.");
-    body.append(mk, t, sub, tabs, f, demo);
-    stagger([t, sub, tabs, f, demo], 0.15, 0.08);
-    s.append(body);
-  }
-  function shake(el) { el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); }
-
-  // ---------- 0b. the plan: a free week, then the family plan ----------
-  function plan() {
-    var s = screen("plan");
-    railSync("plan");
-    s.append(h("div", "sky"));
-    var body = h("div", "body");
-    var pb = pennyBox("wave");
-    var t = html("h3", "ptitle", 'Your <span class="gold-text">free week</span> starts today');
-    var tl = h("div", "tline");
-    [["Today", "Everything unlocked. No card needed."], ["Day 5", "WorthIt reminds you the free week is ending."], ["Day 7", "Choose the family plan, or keep the free plan."]].forEach(function (r, k) {
-      var row = h("div", "trow"); row.append(h("i"), html("div", null, "<b>" + r[0] + "</b><span>" + r[1] + "</span>")); row.style.animationDelay = (0.35 + k * 0.12) + "s"; tl.append(row);
-    });
-    var cards = h("div", "plans");
-    var chosen = "year";
-    function card(id, name, price, per, note, best) {
-      var c = h("button", "tier" + (id === chosen ? " on" : "")); c.type = "button"; c.dataset.id = id;
-      c.append(h("span", "pn", name), html("span", "pp", price + "<small>" + per + "</small>"), h("span", "px", note));
-      if (best) c.append(h("span", "best", best));
-      c.addEventListener("click", function () { chosen = id; cards.querySelectorAll(".tier").forEach(function (x) { x.classList.toggle("on", x === c); }); });
-      return c;
-    }
-    cards.append(card("month", "Monthly", "S$4", "/month", "Cancel any time"), card("year", "Yearly", "S$40", "/year", "S$3.33 a month", "Save 17%"));
-    var go = h("button", "btn", "Start my free week"); go.type = "button";
-    go.addEventListener("click", function () { wipeFrom(go); store.set({ planChosen: chosen, installedAt: Date.now(), trialStartedAt: Date.now() }); setup(); });
-    var pay = h("button", "link center", "Subscribe now instead"); pay.type = "button";
-    pay.addEventListener("click", function () { checkout(chosen, function () { wipeFrom(go); setup(); }); });
-    var fine = h("p", "fine", "After the free week, the free plan keeps prices in days for 3 things a day, the wish list, Learn, lessons 1\u20133 and badges. The family plan adds unlimited price checks, Better buy, Save the Planet and all 8 lessons. Only a grown-up can subscribe.");
-    var rn = html("p", "realnote", "<b>In the real WorthIt</b> this comes right after the account is made. Subscribe opens a secure Stripe page in a new tab; WorthIt never sees the card.");
-    body.append(pb, t, tl, cards, go, pay, fine, rn);
-    stagger([t, cards, go, pay, fine], 0.2, 0.08);
-    s.append(body);
-  }
-  // A demo checkout. The real WorthIt opens a secure page run by ExtensionPay and Stripe here; this demo asks for nothing.
-  function checkout(which, done) {
-    railSync("checkout");
-    var shade = h("div", "shade"), sh = h("div", "sheet co");
-    var price = which === "year" ? "S$40 a year" : "S$4 a month";
-    sh.innerHTML = '<span class="demo-tag">Demo checkout · no real payment</span><h3>WorthIt family plan</h3><p class="cop">' + price + '</p><ul><li>Better buy, Save the Planet and all 8 lessons</li><li>Renews until you cancel; cancel any time</li><li>Refunds within 14 days</li></ul><p class="fine" style="text-align:left">In the real WorthIt, a secure Stripe payment page opens here and the parent enters their card there. WorthIt never sees the card.</p>';
-    var ok = h("button", "btn", "Simulate payment"); ok.type = "button";
-    var no = h("button", "btn ghost", "Go back"); no.type = "button";
-    sh.append(ok, no);
-    var close = function () { sh.classList.add("closing"); shade.classList.add("closing"); railSync(); setTimeout(function () { sh.remove(); shade.remove(); }, 350); };
-    ok.addEventListener("click", function () { store.set({ planActive: true, planChosen: which }); ok.textContent = "Paid! ✓"; setTimeout(function () { close(); done && done(); }, 650); });
-    no.addEventListener("click", close); shade.addEventListener("click", close);
-    dev.append(shade, sh);
-  }
-
   // ---------- 1. Penny asks the questions ----------
   function setup() {
     var s = screen("setup");
     railSync("setup");
     current = WorthItOnboard.mount(s, { store: store, skipSteps: ["pin", "week"], doneLabel: "Show me around", onDone: function () {
-      store.set({ onboardedFor: mem.account ? mem.account.email : "" });
-      var g = dev.querySelector(".ob-go"); if (g) wipeFrom(g);
+            var g = dev.querySelector(".ob-go"); if (g) wipeFrom(g);
       home();
       setTimeout(startTour, REDUCE ? 200 : 1300);
     } });
@@ -2881,12 +2802,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var l1 = h("button", "link"); l1.type = "button"; l1.innerHTML = ICON.tour; l1.append("Take the tour"); l1.addEventListener("click", startTour);
     var l2 = h("button", "link"); l2.type = "button"; l2.innerHTML = ICON.gear; l2.append("Parent settings"); l2.addEventListener("click", settings);
     mini.append(l1, l2);
-    var pst = WorthItPlan.state(mem, Date.now());
-    var ps = h("button", "planchip " + pst.mode); ps.type = "button"; ps.dataset.hint = "Your plan. Tap to see it in Parent settings.";
-    ps.textContent = pst.mode === "paid" ? "\u2726 Family plan" : pst.mode === "trial" ? (pst.daysLeft <= 2 ? "Free week ends in " + W.plural(pst.daysLeft, "day") + " \u00b7 ask a grown-up" : "Free week \u00b7 " + W.plural(pst.daysLeft, "day") + " left") : "Free plan \u00b7 3 price checks a day";
-    ps.addEventListener("click", settings);
-    body.append(mk, t, hi, rank, ps, tag, choices, mini);
-    stagger([t, hi, rank, ps, tag, a1, a2, mini], 0.2, 0.07);
+    body.append(mk, t, hi, rank, tag, choices, mini);
+    stagger([t, hi, rank, tag, a1, a2, mini], 0.2, 0.07);
     s.append(body);
     helpBtn(s, "kid");
   }
@@ -2991,7 +2908,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     page.querySelector(".now").textContent = W.money(p.price, "SGD");
     page.querySelector(".old").textContent = p.old ? W.money(p.old, "SGD") : "";
     page.querySelector(".desc").textContent = p.desc;
-    page.querySelectorAll(".buy button").forEach(function (b) { b.addEventListener("click", function () { toast(s, "Pretend shop: nothing is bought. In the real WorthIt, this is a real shop's own button, and WorthIt never buys anything."); }); });
+    page.querySelectorAll(".buy button").forEach(function (b) { b.addEventListener("click", function () { toast(s, "Pretend shop: nothing is bought. WorthIt never buys anything."); }); });
     s.append(page);
     // WorthIt reads the page: a sweep of light finds the name and the price
     var scan = h("div", "scan"); scan.innerHTML = '<i></i><span>WorthIt is reading this page…</span>';
@@ -3087,27 +3004,11 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
       ok.style.color = ""; ok.textContent = "Saved!";
       setTimeout(function () { ok.textContent = ""; }, 2200);
     });
-    var c4 = h("div", "card");
-    var pst = WorthItPlan.state(mem, Date.now());
-    c4.append(h("h2", null, "Family account"), h("p", null, (mem.account ? mem.account.email + " \u00b7 " : "") + (pst.mode === "paid" ? "Family plan active" : pst.mode === "trial" ? "Free week: " + W.plural(pst.daysLeft, "day") + " left" : "Free plan")));
-    var acts4 = h("div", "fields");
-    if (pst.mode !== "paid") { var up = h("button", "btn", "Unlock the family plan"); up.type = "button"; up.addEventListener("click", function () { checkout(mem.planChosen || "year", function () { settings(); }); }); acts4.append(up); }
-    var lo = h("button", "btn ghost", "Log out"); lo.type = "button";
-    lo.addEventListener("click", function () { store.set({ loggedIn: false }); auth("login"); });
-    acts4.append(lo); c4.append(acts4);
-    c4.append(html("p", "realnote", "<b>In the real WorthIt:</b> Unlock opens a secure Stripe page through ExtensionPay. Manage plan opens ExtensionPay's page to change, cancel or get receipts. Refunds within 14 days."));
-    // Presenter tools: show the free week, the reminder and the free plan without waiting a week.
-    var c5 = h("div", "card");
-    c5.append(h("h2", null, "Demo: time machine"), h("p", null, "For presenting. Jump to a day of the free week to show the reminder and the free plan (3 price checks a day). The real WorthIt simply counts the days."));
-    var seg = h("div", "seg tm");
-    var cur = Math.floor((Date.now() - (mem.trialStartedAt || Date.now())) / 864e5) + 1;
-    [[1, "Day 1"], [6, "Day 6"], [8, "Day 8"]].forEach(function (d) {
-      var b = h("button", null, d[1]); b.type = "button";
-      b.setAttribute("aria-pressed", String(cur === d[0] || (d[0] === 8 && cur >= 8)));
-      b.addEventListener("click", function () { store.set({ trialStartedAt: Date.now() - (d[0] - 1) * 864e5 - 60000, planActive: false, scans: null }); settings(); });
-      seg.append(b);
-    });
-    c5.append(seg);
+    var c6 = h("div", "card");
+    c6.append(h("h2", null, "Help make WorthIt better"), h("p", null, "If you agree, WorthIt sends anonymous counts once a day: which features are used and how many lessons are finished. It never sends your child's name, age, wish list items, the websites they visit, or your email. It's off unless you turn it on."));
+    var sl = h("label", "agree"), sc = h("input"); sc.type = "checkbox"; sc.checked = mem.shareUsage === true;
+    sc.addEventListener("change", function () { store.set({ shareUsage: sc.checked, consentAt: Date.now(), consentVersion: 1 }); });
+    sl.append(sc, h("span", null, "Share anonymous usage counts")); c6.append(sl);
     var c3 = h("div", "card");
     var replay = h("button", "btn ghost", "Run Penny's setup again with your child"); replay.type = "button";
     replay.addEventListener("click", function () { store.set({ onboarded: false }); setup(); });
@@ -3115,12 +3016,12 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     var armed = false;
     wipe.addEventListener("click", function () {
       if (!armed) { armed = true; wipe.textContent = "Tap again to erase everything"; setTimeout(function () { armed = false; wipe.textContent = "Erase everything on this device"; }, 4000); return; }
-      mem = { installedAt: Date.now() }; persist(); auth("signup");
+      mem = { installedAt: Date.now() }; persist(); started = false; setup();
     });
     var g3 = h("div", "fields"); g3.append(replay, wipe); c3.append(g3);
-    var fine = html("p", "fine", "Demo: nothing is saved, and closing the tab starts again. In the real WorthIt, settings stay on your computer and only the parent's email goes to ExtensionPay. No ads, no tracking.<br><a href=\"https://aadiisthebest.github.io/worthit-app/privacy.html\" target=\"_blank\" rel=\"noopener\">Privacy</a> · <a href=\"https://aadiisthebest.github.io/worthit-app/terms.html\" target=\"_blank\" rel=\"noopener\">Terms</a> · © 2026 the WorthIt team");
+    var fine = html("p", "fine", "Demo: nothing is saved or sent, and closing the tab starts again. WorthIt is free: no account, no payments, no ads, no tracking.<br><a href=\"https://aadiisthebest.github.io/worthit-app/privacy.html\" target=\"_blank\" rel=\"noopener\">Privacy</a> · <a href=\"https://aadiisthebest.github.io/worthit-app/terms.html\" target=\"_blank\" rel=\"noopener\">Terms</a> · © 2026 the WorthIt team");
     var sv = h("div", "fields"); sv.style.marginBottom = "12px"; sv.append(save, ok);
-    body.append(c, c2, sv, c4, c5, c3, fine);
+    body.append(c, c2, sv, c6, c3, fine);
     s.append(body);
     var FIELD = { amount: fAmt, name: fName, waitDays: fWait };
     helpBtn(s, "parent", function (a) {
@@ -3288,104 +3189,8 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
     });
   }
 
-  // ---------- presenter rail: move back and forth through the steps, and say what the real WorthIt does ----------
-  var STEPS = [
-    { id: "signup", name: "Sign up", sub: "A grown-up makes the family account",
-      real: "The parent creates the account once on ExtensionPay's secure page: their email, confirmed with a one-time code. No password to remember. WorthIt then stays logged in on that computer." },
-    { id: "login", name: "Log in", sub: "Only on a new computer",
-      real: "Only needed on a new or reset computer. ExtensionPay emails a code, and the plan and free week come back by themselves. Every other day, WorthIt just opens." },
-    { id: "plan", name: "Free week & plan", sub: "S$4 a month or S$40 a year",
-      real: "Shown right after the account is made. “Start my free week” unlocks everything for 7 days with no card. On day 5 WorthIt reminds the parent. After day 7: the free plan (3 price checks a day) or the family plan." },
-    { id: "checkout", name: "Payment", sub: "Stripe, through ExtensionPay",
-      real: "A secure Stripe page opens in a new tab. The parent pays by card or Apple/Google Pay; WorthIt never sees the card. The plan switches on within seconds and renews until cancelled from Parent settings." },
-    { id: "setup", name: "Penny's setup", sub: "Name, age and allowance",
-      real: "The same in the real WorthIt: Penny asks the child's name, age and allowance. It's kept on the computer and never sent anywhere." },
-    { id: "tour", name: "Guided tour", sub: "Penny shows each part",
-      real: "In the real WorthIt the child does this on real shops: Amazon, Shopee, Lazada, Toys“R“Us and more. WorthIt reads the name and price from the page itself." },
-    { id: "startup", name: "Start-up", sub: "The WorthIt logo and bar",
-      real: "In the real WorthIt this start-up plays each time the child launches WorthIt on a shop. No logging in again." },
-    { id: "explore", name: "Explore", sub: "Free use, Penny in the corner",
-      real: "The real WorthIt works on real shopping sites, and everything is saved on the computer. This demo uses a pretend shop and forgets everything when the tab closes." }
-  ];
-  var rail = null, railAt = "signup";
-  function railSync(id) {
-    if (!id) id = tour ? "tour" : dev.querySelector(".launch") ? "startup" : dev.querySelector(".sheet.co:not(.closing)") ? "checkout" : (function () {
-      var c = dev.querySelector(".scr:not(.leaving)"); var n = c && c.dataset.name;
-      return n === "auth" ? railAt : n === "plan" ? "plan" : n === "setup" ? "setup" : "explore"; })();
-    railAt = id;
-    if (!rail) return;
-    var at = STEPS.findIndex(function (x) { return x.id === id; });
-    rail.querySelectorAll(".rs button").forEach(function (b, k) { b.classList.toggle("on", k === at); b.classList.toggle("done", k < at); if (k === at) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
-    rail.querySelector(".rnote p").textContent = STEPS[at].real;
-    rail.querySelector(".rcur").textContent = (at + 1) + " of " + STEPS.length + " · " + STEPS[at].name;
-    rail.querySelector(".rnav .bk").disabled = at === 0;
-    rail.querySelector(".rnav .nx").disabled = at === STEPS.length - 1;
-  }
-  function needAccount() {
-    if (!mem.account) store.set({ account: { email: "parent@example.com", since: Date.now() } });
-    if (!mem.trialStartedAt) store.set({ trialStartedAt: Date.now(), installedAt: Date.now() });
-    store.set({ loggedIn: true });
-  }
-  function needSetup() {
-    needAccount();
-    if (!mem.onboarded) store.set({ name: mem.name || "Sam", age: mem.age || "9", amount: mem.amount || 10, period: mem.period || "week", currency: mem.currency || "SGD", waitDays: mem.waitDays || 3, onboarded: true, pennySeen: true });
-    store.set({ onboardedFor: mem.account.email });
-  }
-  function clearOverlays() {
-    if (tour) endTour(false);
-    closePenny(true); hideHint();
-    dev.querySelectorAll(".sheet.co, .shade").forEach(function (x) { x.remove(); });
-    var L = dev.querySelector(".launch"); if (L) L.remove();
-  }
-  function goStep(id) {
-    clearOverlays();
-    if (id === "signup") { store.set({ loggedIn: false }); auth("signup"); }
-    else if (id === "login") { needAccount(); store.set({ loggedIn: false }); auth("login"); }
-    else if (id === "plan") { needAccount(); plan(); }
-    else if (id === "checkout") { needAccount(); plan(); setTimeout(function () { checkout("year", function () { setup(); }); }, REDUCE ? 50 : 500); }
-    else if (id === "setup") { needAccount(); store.set({ onboarded: false }); setup(); }
-    else if (id === "tour") { needSetup(); home(); setTimeout(startTour, REDUCE ? 100 : 700); }
-    else if (id === "startup") { needSetup(); store.set({ toured: true }); startup(function () { home(true); }, true); }
-    else { needSetup(); store.set({ toured: true }); home(); }
-  }
-  function buildRail() {
-    if (rail) return;
-    rail = h("aside", "rail"); rail.setAttribute("aria-label", "Presenter: demo steps");
-    rail.append(html("div", "rh", '<span class="rk">Presenter</span><b>Demo steps</b>'));
-    var ol = h("ol", "rs");
-    STEPS.forEach(function (st, k) {
-      var li = h("li"), b = h("button"); b.type = "button";
-      b.innerHTML = "<i>" + (k + 1) + "</i><span>" + esc(st.name) + "<small>" + esc(st.sub) + "</small></span>";
-      b.addEventListener("click", function () { goStep(st.id); });
-      li.append(b); ol.append(li);
-    });
-    var note = html("div", "rnote", '<span class="rk">In the real WorthIt</span><p></p>');
-    var nav = h("div", "rnav");
-    var bk = h("button", "bk", "‹ Back"), nx = h("button", "nx", "Next ›"); bk.type = nx.type = "button";
-    var cur = h("span", "rcur");
-    bk.addEventListener("click", function () { var k = STEPS.findIndex(function (x) { return x.id === railAt; }); if (k > 0) goStep(STEPS[k - 1].id); });
-    nx.addEventListener("click", function () { var k = STEPS.findIndex(function (x) { return x.id === railAt; }); if (k < STEPS.length - 1) goStep(STEPS[k + 1].id); });
-    nav.append(bk, cur, nx);
-    var tm = html("div", "rtm", '<span class="rk">Time machine · demo only</span>');
-    var seg = h("div", "seg");
-    [[1, "Day 1"], [6, "Day 6"], [8, "Day 8"]].forEach(function (d) {
-      var b = h("button", null, d[1]); b.type = "button";
-      b.addEventListener("click", function () {
-        clearOverlays(); needSetup();
-        store.set({ trialStartedAt: Date.now() - (d[0] - 1) * 864e5 - 60000, planActive: false, scans: null, toured: true });
-        seg.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-        var c = dev.querySelector(".scr:not(.leaving)"); if (c && c.dataset.name === "settings") settings(); else home();
-      });
-      seg.append(b);
-    });
-    tm.append(seg);
-    rail.append(ol, note, nav, tm);
-    // the steps sit to the left of the device; on a phone they shrink to a Back / Next bar on top
-    nav.querySelector(".rcur").textContent = "";
-    rail.insertBefore(nav, ol.nextSibling);
-    app.insertBefore(rail, dev);
-    railSync(railAt);
-  }
+  var rail = null;
+  function railSync() { /* no presenter rail */ }
 
   // ---------- the entrance ----------
   var dust = document.getElementById("dust");
@@ -3394,9 +3199,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = WorthItAI;
   document.getElementById("enter").addEventListener("click", function () {
     intro.classList.add("leave");
     app.hidden = false;
-    buildRail();
-    if (!mem.loggedIn) auth(mem.account ? "login" : "signup");
-    else if (!mem.onboarded || mem.onboardedFor !== (mem.account && mem.account.email)) setup();
+    if (!mem.onboarded) setup();
     else { home(); if (!mem.toured) setTimeout(startTour, REDUCE ? 200 : 1200); }
     setTimeout(function () { intro.remove(); }, REDUCE ? 0 : 800);
   });
